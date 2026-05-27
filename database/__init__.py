@@ -1,8 +1,8 @@
 import os
 from contextlib import contextmanager
 
-import psycopg
-from psycopg.rows import dict_row
+import psycopg2
+from psycopg2.rows import dict_row
 
 from config import DATABASE_URI
 
@@ -29,7 +29,7 @@ CREATE INDEX IF NOT EXISTS idx_pastes_expires_at ON pastes (expires_at);
 
 @contextmanager
 def get_conn():
-    conn = psycopg.connect(DATABASE_URI, row_factory=dict_row)
+    conn = psycopg2.connect(DATABASE_URI, row_factory=dict_row)
     try:
         yield conn
         conn.commit()
