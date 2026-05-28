@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
 
 from models import PasteCreate, PasteResponse
+from config import DATABASE_URI
 
 from database import start_db
 from database.funcs import (
@@ -25,13 +26,13 @@ from database.funcs import (
 )
 
 
-print(DATABASE_URI)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
         start_db()
     except Exception as e:
-        print(f"Error initializing database: {e}")
+        print(f"Error initializing database: {e}", datetime)
 
     yield
 
