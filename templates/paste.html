@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaguneBin - View Paste</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #ff1744;
+            --primary-dark: #c41c3b;
+            --background: #090b14;
+            --surface: #111522;
+            --surface-light: #181d2c;
+            --text-primary: #ffffff;
+            --text-secondary: #a6acb9;
+            --border-color: #2a3145;
+            --accent-glow: rgba(255, 23, 68, 0.18);
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--background);
+            color: var(--text-primary);
+            font-family: "Inter", "Segoe UI", sans-serif;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at top left, rgba(255, 23, 68, 0.08), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(255, 23, 68, 0.05), transparent 35%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        code,
+        pre {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(14px);
+            background: rgba(10, 14, 24, 0.82);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: auto;
+            padding: 1.1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 16px rgba(255, 23, 68, 0.35));
+        }
+
+        .logo span:last-child {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 0.85rem 1.4rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(
+                135deg,
+                var(--primary-color),
+                var(--primary-dark)
+            );
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 23, 68, 0.18);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 23, 68, 0.28);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(255, 23, 68, 0.06);
+        }
+
+        .paste-container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 420px;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .error {
+            background: var(--surface);
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            border-radius: 18px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .error h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .error p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .error button {
+            margin-top: 1.5rem;
+        }
+
+        .paste-header {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px 20px 0 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .paste-info h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .paste-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 700px;
+            font-size: 0.95rem;
+        }
+
+        .paste-meta {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            margin-top: 1.4rem;
+        }
+
+        .meta-item {
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .paste-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(255, 23, 68, 0.06);
+        }
+
+        .paste-content {
+            border: 1px solid var(--border-color);
+            border-top: none;
+            background: var(--surface-light);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.01);
+        }
+
+        .code-lang {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .code-area {
+            overflow-x: auto;
+            padding: 1.7rem;
+        }
+
+        .code-area pre {
+            margin: 0;
+            background: transparent;
+        }
+
+        .code-area code {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.92rem;
+            line-height: 1.8;
+        }
+
+        .paste-footer {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            padding: 1.4rem 1.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .footer-note {
+            opacity: 0.7;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 460px;
+            background: var(--surface);
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            border-radius: 22px;
+            padding: 2.5rem;
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.5),
+                0 0 40px rgba(255, 23, 68, 0.12);
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-header h2 {
+            text-align: center;
+            margin-bottom: 0.7rem;
+        }
+
+        .modal-subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.7;
+            margin-bottom: 1.8rem;
+            font-size: 0.92rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-size: 0.92rem;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 0.95rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-light);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.15);
+        }
+
+        .password-error {
+            display: none;
+            margin-top: 0.8rem;
+            color: #ff7a7a;
+            font-size: 0.85rem;
+        }
+
+        .password-error.show {
+            display: block;
+        }
+
+        .btn-submit {
+            width: 100%;
+            border: none;
+            padding: 0.95rem;
+            border-radius: 12px;
+            background: linear-gradient(
+                135deg,
+                var(--primary-color),
+                var(--primary-dark)
+            );
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(255, 23, 68, 0.22);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-new-paste {
+            width: 100%;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 0.9rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-new-paste:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .modal-links {
+            margin-top: 1.3rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .modal-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(350px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .paste-header {
+                flex-direction: column;
+            }
+
+            .paste-toolbar {
+                justify-content: flex-start;
+            }
+
+            .paste-footer {
+                flex-direction: column;
+                gap: 0.8rem;
+                text-align: center;
+            }
+
+            .header-actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-content">
+
+        <a href="/" class="logo">
+            <img src="/assets/logo.png" alt="KaguneBin Logo">
+            <div>
+                Kagune<span>Bin</span>
+            </div>
+        </a>
+
+        <div class="header-actions">
+            <button class="btn-secondary" onclick="window.location.href='/'">
+                ← Back Home
+            </button>
+
+            <button class="btn-primary" onclick="window.location.href='/paste'">
+                ✨ Create Paste
+            </button>
+        </div>
+
+    </div>
+</header>
+
+<div class="paste-container" id="pasteContainer">
+
+    <div class="loading">
+        <div class="spinner"></div>
+
+        <p>
+            Retrieving encrypted paste from the underground archive...
+        </p>
+    </div>
+
+</div>
+
+<div class="modal" id="passwordModal">
+
+    <div class="modal-content">
+
+        <div class="modal-icon">🔐</div>
+
+        <div class="modal-header">
+            <h2>Protected Kagune Archive</h2>
+        </div>
+
+        <p class="modal-subtitle">
+            This paste is protected by password authentication.
+            Enter the access key to unlock the hidden content.
+        </p>
+
+        <form onsubmit="submitPassword(event)">
+
+            <div class="form-group">
+
+                <label for="passwordInput">
+                    Access Password
+                </label>
+
+                <input
+                    type="password"
+                    id="passwordInput"
+                    placeholder="Enter password"
+                    required
+                    autofocus
+                >
+
+                <div class="password-error" id="passwordError">
+                    Incorrect password. Verify the credentials and try again.
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                🔓 Unlock Paste
+            </button>
+
+            <button
+                type="button"
+                class="btn-new-paste"
+                onclick="window.location.href='/'"
+            >
+                ➕ Create New Paste
+            </button>
+
+        </form>
+
+        <div class="modal-links">
+            <a onclick="window.location.href='/'">Back Home</a>
+            <span>•</span>
+            <a onclick="showPasswordHint()">Need Help?</a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('contextmenu', (e) => {
+        const isPasswordProtected =
+            document.getElementById('passwordModal')
+            .classList.contains('active');
+
+        if (isPasswordProtected) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        const isPasswordProtected =
+            document.getElementById('passwordModal')
+            .classList.contains('active');
+
+        if (
+            isPasswordProtected &&
+            (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J')
+            )
+        ) {
+            e.preventDefault();
+        }
+    });
+
+    const container = document.getElementById('pasteContainer');
+    const passwordModal = document.getElementById('passwordModal');
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    let currentPasteId = null;
+    let currentPassword = null;
+
+    function getPasteId() {
+        const pathParts = window.location.pathname.split('/');
+        return pathParts[pathParts.length - 1];
+    }
+
+    function showToast(message, duration = 3000) {
+        const toast = document.createElement('div');
+
+        toast.className = 'toast';
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.remove(), duration);
+    }
+
+    function showPasswordHint() {
+        showToast('Contact the paste creator to obtain the password.');
+    }
+
+    async function loadPaste() {
+        currentPasteId = getPasteId();
+
+        if (!currentPasteId) {
+            showError('No paste ID provided.');
+            return;
+        }
+
+        try {
+            const url =
+                `/api/paste/${currentPasteId}${currentPassword ? `?password=${encodeURIComponent(currentPassword)}` : ''}`;
+
+            const response = await fetch(url);
+
+            if (response.status === 401) {
+                passwordModal.classList.add('active');
+                passwordInput.focus();
+                return;
+            }
+
+            if (!response.ok) {
+                const error = await response.json();
+
+                if (response.status === 404) {
+                    showError(
+                        'Paste not found. It may have expired or been deleted.'
+                    );
+                } else if (response.status === 410) {
+                    showError(
+                        'This paste has expired and is no longer available.'
+                    );
+                } else {
+                    showError(error.detail || 'Error loading paste.');
+                }
+
+                return;
+            }
+
+            const paste = await response.json();
+            renderPaste(paste);
+
+        } catch (error) {
+            console.error(error);
+
+            showError(
+                'Failed to load paste. Please try again later.'
+            );
+        }
+    }
+
+    function showError(message) {
+        container.innerHTML = `
+            <div class="error">
+                <h2>⚠️ Access Error</h2>
+
+                <p>${message}</p>
+
+                <button
+                    class="btn-primary"
+                    onclick="window.location.href='/'"
+                >
+                    Return Home
+                </button>
+            </div>
+        `;
+    }
+
+    function renderPaste(paste) {
+
+        const createdDate =
+            new Date(paste.created_at).toLocaleString();
+
+        const expiresDate =
+            paste.expires_at
+                ? new Date(paste.expires_at).toLocaleString()
+                : 'Never';
+
+        container.innerHTML = `
+            <div class="paste-header">
+
+                <div class="paste-info">
+
+                    <h1>${escapeHtml(paste.title)}</h1>
+
+                    <p class="paste-description">
+                        Securely shared through KaguneBin —
+                        a modern anonymous paste platform focused on
+                        privacy, speed, and temporary collaboration.
+                    </p>
+
+                    <div class="paste-meta">
+
+                        <div class="meta-item">
+                            📅 Created: ${createdDate}
+                        </div>
+
+                        <div class="meta-item">
+                            👁️ Views: ${paste.views}
+                        </div>
+
+                        <div class="meta-item">
+                            ⏳ Expires: ${expiresDate}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="paste-toolbar">
+
+                    ${
+                        paste.is_burn_after_read
+                            ? `
+                                <span class="btn-action">
+                                    🔥 Burn After Read
+                                </span>
+                            `
+                            : ''
+                    }
+
+                    ${
+                        paste.is_protected
+                            ? `
+                                <span class="btn-action">
+                                    🔐 Password Protected
+                                </span>
+                            `
+                            : ''
+                    }
+
+                    <button class="btn-action" onclick="copyToClipboard()">
+                        📋 Copy
+                    </button>
+
+                    <button class="btn-action" onclick="shareUrl()">
+                        🔗 Share
+                    </button>
+
+                    <button class="btn-action" onclick="viewRaw()">
+                        📄 Raw
+                    </button>
+
+                    <button class="btn-action" onclick="downloadPaste()">
+                        ⬇️ Download
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="paste-content">
+
+                <div class="code-header">
+
+                    <span class="code-lang">
+                        • ${paste.syntax}
+                    </span>
+
+                </div>
+
+                <div class="code-area">
+
+                    <pre>
+<code class="language-${paste.syntax}" id="pasteCode">${escapeHtml(paste.content)}</code>
+                    </pre>
+
+                </div>
+
+            </div>
+
+            <div class="paste-footer">
+
+                <span>
+                    Paste ID:
+                    <code>${paste.id}</code>
+                </span>
+
+                <span class="footer-note">
+                    ${paste.downloads} downloads • Powered by KaguneBin
+                </span>
+
+            </div>
+        `;
+
+        document.querySelectorAll('pre code').forEach(block => {
+            hljs.highlightElement(block);
+        });
+
+        passwordModal.classList.remove('active');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function copyToClipboard() {
+
+        const codeElement =
+            document.getElementById('pasteCode');
+
+        if (!codeElement) return;
+
+        navigator.clipboard.writeText(
+            codeElement.textContent
+        ).then(() => {
+
+            showToast('✓ Paste copied to clipboard');
+
+        }).catch(() => {
+
+            showToast('Failed to copy paste');
+
+        });
+    }
+
+    function shareUrl() {
+
+        navigator.clipboard.writeText(
+            window.location.href
+        ).then(() => {
+
+            showToast('🔗 Share URL copied');
+
+        }).catch(() => {
+
+            showToast('Failed to copy URL');
+
+        });
+    }
+
+    function viewRaw() {
+
+        const pasteId = getPasteId();
+
+        window.open(
+            `/raw/${pasteId}${
+                currentPassword
+                    ? `?password=${encodeURIComponent(currentPassword)}`
+                    : ''
+            }`,
+            '_blank'
+        );
+    }
+
+    function downloadPaste() {
+
+        const pasteId = getPasteId();
+
+        const element = document.createElement('a');
+
+        element.setAttribute(
+            'href',
+            `/download/${pasteId}${
+                currentPassword
+                    ? `?password=${encodeURIComponent(currentPassword)}`
+                    : ''
+            }`
+        );
+
+        element.style.display = 'none';
+
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+
+        showToast('✓ Download started');
+    }
+
+    function submitPassword(event) {
+
+        event.preventDefault();
+
+        const password = passwordInput.value;
+
+        if (!password) {
+            passwordError.classList.add('show');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = '🔓 Unlocking...';
+
+        passwordError.classList.remove('show');
+
+        currentPassword = password;
+
+        loadPaste().finally(() => {
+
+            if (passwordModal.classList.contains('active')) {
+
+                passwordError.classList.add('show');
+
+                submitBtn.disabled = false;
+                submitBtn.innerText = '🔓 Unlock Paste';
+
+                passwordInput.value = '';
+                passwordInput.focus();
+
+            } else {
+
+                submitBtn.disabled = false;
+                submitBtn.innerText = '🔓 Unlock Paste';
+
+            }
+        });
+    }
+
+    loadPaste();
+</script>
+
+</body>
+</html>

@@ -3,6 +3,7 @@ from typing import Optional
 
 from database import get_conn
 
+
 def insert_paste(
     *,
     paste_id: str,
@@ -17,26 +18,53 @@ def insert_paste(
 ) -> dict:
     sql = """
         INSERT INTO pastes (
-            id, title, content, syntax,
-            is_protected, password, is_burn_after_read,
-            created_at, expires_at
+            id,
+            title,
+            content,
+            syntax,
+            is_protected,
+            password,
+            is_burn_after_read,
+            created_at,
+            expires_at
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (
+            %s, %s, %s, %s,
+            %s, %s, %s,
+            %s, %s
+        )
         RETURNING *;
     """
+
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute(sql, (
-            paste_id, title, content, syntax,
-            is_protected, password, is_burn_after_read,
-            created_at, expires_at,
-        ))
-        return
+        cur.execute(
+            sql,
+            (
+                paste_id,
+                title,
+                content,
+                syntax,
+                is_protected,
+                password,
+                is_burn_after_read,
+                created_at,
+                expires_at,
+            ),
+        )
+
+        return cur.fetchone()
+
 
 def get_paste(paste_id: str) -> Optional[dict]:
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute("SELECT * FROM pastes WHERE id = %s;", (paste_id,))
+        cur.execute(
+            "SELECT * FROM pastes WHERE id = %s;",
+            (paste_id,),
+        )
+
         return cur.fetchone()
-    
+
+
 def increment_views(paste_id: str) -> dict:
     sql = """
         UPDATE pastes
@@ -44,16 +72,41 @@ def increment_views(paste_id: str) -> dict:
         WHERE id = %s
         RETURNING *;
     """
+
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute(sql, (paste_id,))
+
         return cur.fetchone()
+
+
+def increment_downloads(paste_id: str) -> dict:
+    sql = """
+        UPDATE pastes
+        SET downloads = downloads + 1
+        WHERE id = %s
+        RETURNING *;
+    """
+
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(sql, (paste_id,))
+
+        return cur.fetchone()
+
 
 def delete_paste(paste_id: str) -> bool:
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute("DELETE FROM pastes WHERE id = %s;", (paste_id,))
+        cur.execute(
+            "DELETE FROM pastes WHERE id = %s;",
+            (paste_id,),
+        )
+
         return cur.rowcount > 0
+
 
 def list_pastes() -> list[dict]:
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute("SELECT * FROM pastes ORDER BY created_at DESC;")
+        cur.execute(
+            "SELECT * FROM pastes ORDER BY created_at DESC;"
+        )
+
         return cur.fetchall()
