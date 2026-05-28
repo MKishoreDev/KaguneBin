@@ -25,7 +25,7 @@ from database.funcs import (
 )
 
 
-
+print(DATABASE_URI)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
