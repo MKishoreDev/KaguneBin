@@ -37,7 +37,6 @@ class PasteCreate(BaseModel):
         ge=0,
         le=59,
     )
-
     tz_offset_minutes: Optional[int] = Field(default=0)
 
     @property
