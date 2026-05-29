@@ -13,6 +13,7 @@
     />
 
     <meta property="og:title" content="KaguneBin" />
+
     <meta
         property="og:description"
         content="Paste Fear. Share Power. A modern anonymous pastebin for developers."
@@ -29,7 +30,13 @@
     />
 
     <meta property="og:type" content="website" />
+
     <link rel="icon" type="image/png" href="/assets/logo.png">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
         * {
@@ -71,6 +78,7 @@
             font-family: "Inter", "Segoe UI", sans-serif;
             transition: background 0.3s ease, color 0.3s ease;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         body::before {
@@ -204,9 +212,11 @@
             cursor: pointer;
             border-radius: 12px;
             padding: 0.9rem 1.5rem;
-            background: linear-gradient(135deg,
-                    var(--primary-color),
-                    var(--primary-dark));
+            background: linear-gradient(
+                135deg,
+                var(--primary-color),
+                var(--primary-dark)
+            );
             color: white;
             font-weight: 600;
             transition: 0.3s;
@@ -280,19 +290,23 @@
             margin-bottom: 1.5rem;
             font-weight: 800;
 
-            background: linear-gradient(180deg,
-                    #ffffff 0%,
-                    #ffd4dd 40%,
-                    #ff1744 100%);
+            background: linear-gradient(
+                180deg,
+                #ffffff 0%,
+                #ffd4dd 40%,
+                #ff1744 100%
+            );
 
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         html.light-mode .hero-content h2 {
-            background: linear-gradient(180deg,
-                    #1f1f1f 0%,
-                    #ff4f7d 100%);
+            background: linear-gradient(
+                180deg,
+                #1f1f1f 0%,
+                #ff4f7d 100%
+            );
 
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -571,7 +585,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .time-picker-group {
@@ -598,6 +612,26 @@
 
         .success-link:hover {
             text-decoration: underline;
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            padding-right: 3rem;
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 0.8rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
         }
 
         @media (max-width: 950px) {
@@ -649,7 +683,10 @@
             </a>
 
             <nav>
-                <a href="/" class="active">Home</a>
+
+                <a href="/" class="active">
+                    Home
+                </a>
 
                 <a href="#" onclick="openPasteModal(event)">
                     Create Paste
@@ -662,6 +699,7 @@
                 <a href="https://github.com/MKishoreDev/KaguneBin">
                     GitHub
                 </a>
+
             </nav>
 
             <div class="nav-right">
@@ -786,21 +824,21 @@
                         </span>
 
                         <span class="code-line">
-                            privacy:
+                            &nbsp;&nbsp;privacy:
                             <span class="code-string">
                                 "anonymous"
                             </span>,
                         </span>
 
                         <span class="code-line">
-                            sharing:
+                            &nbsp;&nbsp;sharing:
                             <span class="code-string">
                                 "instant"
                             </span>,
                         </span>
 
                         <span class="code-line">
-                            expiration:
+                            &nbsp;&nbsp;expiration:
                             <span class="code-string">
                                 "burn_after_read"
                             </span>
@@ -836,7 +874,9 @@
 
                 <div class="feature-card">
                     <div class="feature-icon">🔥</div>
+
                     <h3>Burn After Reading</h3>
+
                     <p>
                         Automatically destroy pastes after they are viewed once.
                     </p>
@@ -844,7 +884,9 @@
 
                 <div class="feature-card">
                     <div class="feature-icon">🔐</div>
+
                     <h3>Password Protection</h3>
+
                     <p>
                         Secure sensitive pastes with optional password encryption.
                     </p>
@@ -852,7 +894,9 @@
 
                 <div class="feature-card">
                     <div class="feature-icon">⏳</div>
+
                     <h3>Expiring Pastes</h3>
+
                     <p>
                         Set custom expiration times for temporary sharing.
                     </p>
@@ -860,7 +904,9 @@
 
                 <div class="feature-card">
                     <div class="feature-icon">✨</div>
+
                     <h3>Syntax Highlighting</h3>
+
                     <p>
                         Clean syntax support for multiple programming languages.
                     </p>
@@ -868,7 +914,9 @@
 
                 <div class="feature-card">
                     <div class="feature-icon">📡</div>
+
                     <h3>Instant Sharing</h3>
+
                     <p>
                         Generate direct links instantly for fast collaboration.
                     </p>
@@ -881,10 +929,12 @@
     </main>
 
     <footer>
+
         <p>
             © 2026 KaguneBin —
             Built with FastAPI, caffeine, and Tokyo Ghoul inspiration.
         </p>
+
     </footer>
 
     <div class="modal" id="pasteModal">
@@ -976,12 +1026,27 @@
 
                     </div>
 
-                    <input
-                        type="password"
-                        id="password"
-                        class="hidden"
-                        placeholder="Enter password"
+                    <div
+                        class="password-wrapper hidden"
+                        id="passwordWrapper"
                     >
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter password"
+                        >
+
+                        <button
+                            type="button"
+                            class="toggle-password-btn"
+                            onclick="togglePasswordVisibility()"
+                            id="togglePassword"
+                        >
+                            👁
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -1062,13 +1127,18 @@
     </div>
 
     <script>
-        const pasteModal = document.getElementById("pasteModal");
+
+        const pasteModal =
+            document.getElementById("pasteModal");
 
         const isProtectedCheckbox =
             document.getElementById("isProtected");
 
         const passwordInput =
             document.getElementById("password");
+
+        const passwordWrapper =
+            document.getElementById("passwordWrapper");
 
         const isExpiryCheckbox =
             document.getElementById("isExpiry");
@@ -1086,7 +1156,10 @@
             document.getElementById("apiResult");
 
         function toggleTheme() {
-            const html = document.documentElement;
+
+            const html =
+                document.documentElement;
+
             const button =
                 document.querySelector(".theme-toggle");
 
@@ -1134,6 +1207,7 @@
         }
 
         function closePasteModal() {
+
             pasteModal.classList.remove("active");
         }
 
@@ -1146,10 +1220,20 @@
 
         isProtectedCheckbox.addEventListener("change", () => {
 
-            passwordInput.classList.toggle(
+            passwordWrapper.classList.toggle(
                 "hidden",
                 !isProtectedCheckbox.checked
             );
+
+            if (!isProtectedCheckbox.checked) {
+
+                passwordInput.value = "";
+
+                passwordInput.type = "password";
+
+                document.getElementById("togglePassword")
+                    .textContent = "👁";
+            }
         });
 
         isExpiryCheckbox.addEventListener("change", () => {
@@ -1160,10 +1244,30 @@
             );
         });
 
+        function togglePasswordVisibility() {
+
+            const btn =
+                document.getElementById("togglePassword");
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+
+                btn.textContent = "🙈";
+
+            } else {
+
+                passwordInput.type = "password";
+
+                btn.textContent = "👁";
+            }
+        }
+
         function copyCode() {
 
             const code =
-                document.querySelector(".code-content").innerText;
+                document.querySelector(".code-content")
+                .innerText;
 
             navigator.clipboard.writeText(code);
 
@@ -1191,6 +1295,7 @@
                 );
 
             submitBtn.disabled = true;
+
             submitBtn.innerText = "Creating...";
 
             apiResult.style.display = "none";
@@ -1239,16 +1344,25 @@
 
                     expiry_hour:
                         expiryTimeInput.value
-                            ? parseInt(expiryTimeInput.value.split(":")[0])
+                            ? parseInt(
+                                expiryTimeInput
+                                    .value
+                                    .split(":")[0]
+                            )
                             : null,
 
                     expiry_minute:
                         expiryTimeInput.value
-                            ? parseInt(expiryTimeInput.value.split(":")[1])
+                            ? parseInt(
+                                expiryTimeInput
+                                    .value
+                                    .split(":")[1]
+                            )
                             : null
                 };
 
                 if (!payload.content.trim()) {
+
                     throw new Error(
                         "Paste content cannot be empty"
                     );
@@ -1265,12 +1379,14 @@
                     body: JSON.stringify(payload)
                 });
 
-                const data = await response.json();
+                const data =
+                    await response.json();
 
                 if (!response.ok) {
 
                     throw new Error(
-                        data.detail || "Failed to create paste"
+                        data.detail ||
+                        "Failed to create paste"
                     );
                 }
 
@@ -1280,7 +1396,10 @@
                 apiResult.style.display = "block";
 
                 apiResult.innerHTML = `
-                    <strong>✨ Paste Created Successfully!</strong>
+                    <strong>
+                        ✨ Paste Created Successfully!
+                    </strong>
+
                     <br><br>
 
                     <a
@@ -1313,8 +1432,10 @@
                 `;
 
                 setTimeout(() => {
+
                     window.location.href =
                         "/p/" + data.id;
+
                 }, 1200);
 
             } catch (error) {
@@ -1336,6 +1457,7 @@
         }
 
         loadTheme();
+
     </script>
 
 </body>
