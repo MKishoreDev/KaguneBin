@@ -62,6 +62,15 @@ def get_paste(paste_id: str) -> Optional[dict]:
 
         return cur.fetchone()
 
+def delete_paste(paste_id: str) -> bool:
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "DELETE FROM pastes WHERE id = %s;",
+            (paste_id,),
+        )
+
+        return cur.rowcount > 0
+
 def increment_views(paste_id: str) -> dict:
     sql = """
         UPDATE pastes
