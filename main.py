@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from uuid import uuid4
+import hashlib
+import base64
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import (
@@ -46,6 +48,10 @@ pwd_context = CryptContext(
     deprecated="auto",
 )
 
+def hash_password_for_bcrypt(password: str) -> str:
+    digest = hashlib.sha256(password.encode("utf-8")).digest()
+    return base64.b64encode(digest).decode("utf-8")
+
 def build_expires_at(paste: PasteCreate) -> datetime | None:
     if not paste.is_expiry:
         return None
@@ -69,15 +75,16 @@ def build_expires_at(paste: PasteCreate) -> datetime | None:
             minute=paste.expiry_minute,
             second=0,
             microsecond=0,
+            tzinfo=timezone.utc,
         )
-        
-        now = datetime.utcnow()
+
+        now = datetime.now(timezone.utc)
         if expiry_datetime <= now:
             raise HTTPException(
                 status_code=400,
                 detail="Expiry time must be in the future",
             )
-        
+
         return expiry_datetime
 
     except ValueError as e:
@@ -90,7 +97,9 @@ def is_expired(data: dict) -> bool:
     expires_at = data.get("expires_at")
     if expires_at is None:
         return False
-    now = datetime.utcnow() if not isinstance(datetime.utcnow(), type(expires_at)) else datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
     return now >= expires_at
 
 def row_to_response(data: dict) -> dict:
@@ -145,7 +154,7 @@ def validate_password(data: dict, password: str | None):
             detail="Password required",
         )
 
-    if not pwd_context.verify(password, data["password"]):
+    if not pwd_context.verify(hash_password_for_bcrypt(password), data["password"]):
         raise HTTPException(
             status_code=401,
             detail="Invalid password",
@@ -172,7 +181,7 @@ def create_paste(paste: PasteCreate):
         paste_id = f"kgn_{uuid4().hex[:8]}"
         expires_at = build_expires_at(paste)
         hashed_password = (
-            pwd_context.hash(paste.password)
+            pwd_context.hash(hash_password_for_bcrypt(paste.password))
             if paste.password
             else None
         )
