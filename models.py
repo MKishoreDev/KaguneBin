@@ -38,6 +38,8 @@ class PasteCreate(BaseModel):
         le=59,
     )
 
+    tz_offset_minutes: Optional[int] = Field(default=0)
+
     @property
     def is_protected(self) -> bool:
         return self.security.is_protected
