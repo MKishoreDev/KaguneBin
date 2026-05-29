@@ -19,6 +19,7 @@ from database import start_db
 from database.funcs import (
     insert_paste,
     get_paste as db_get_paste,
+    delete_paste as db_delete_paste
     increment_views,
     increment_downloads,
     list_pastes,
