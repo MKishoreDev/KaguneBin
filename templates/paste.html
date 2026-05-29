@@ -873,19 +873,37 @@
         });
     }
 
-    function shareUrl() {
+    async function shareUrl() {
+        const shareData = {
+            title: 'KaguneBin Paste',
+            text: 'Check out this paste on KaguneBin',
+            url: window.location.href
+        };
 
-        navigator.clipboard.writeText(
-            window.location.href
-        ).then(() => {
+        if (navigator.share) {
 
-            showToast('🔗 Share URL copied');
+            try {
+                await navigator.share(shareData);
+                showToast('✓ Share opened');
 
-        }).catch(() => {
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error(error);
+                    showToast('Sharing failed');
 
-            showToast('Failed to copy URL');
+                }
+            }
 
-        });
+        } else {
+
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => {
+                    showToast('🔗 Share URL copied');
+                })
+                .catch(() => {
+                    showToast('Failed to copy URL');
+                });
+        }
     }
 
     function viewRaw() {
