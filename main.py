@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from uuid import uuid4
 import hashlib
 import base64
@@ -46,11 +46,13 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto",
+    bcrypt__truncate_error=False,
 )
 
 def hash_password_for_bcrypt(password: str) -> str:
     digest = hashlib.sha256(password.encode("utf-8")).digest()
-    return base64.b64encode(digest).decode("utf-8")
+    b64 = base64.b64encode(digest).decode("utf-8")
+    return b64[:72]
 
 def build_expires_at(paste: PasteCreate) -> datetime | None:
     if not paste.is_expiry:
@@ -67,7 +69,9 @@ def build_expires_at(paste: PasteCreate) -> datetime | None:
         )
 
     try:
-        expiry_datetime = datetime(
+        tz_offset = timedelta(minutes=paste.tz_offset_minutes or 0)
+
+        local_dt = datetime(
             year=paste.expiry_date.year,
             month=paste.expiry_date.month,
             day=paste.expiry_date.day,
@@ -75,8 +79,9 @@ def build_expires_at(paste: PasteCreate) -> datetime | None:
             minute=paste.expiry_minute,
             second=0,
             microsecond=0,
-            tzinfo=timezone.utc,
         )
+
+        expiry_datetime = local_dt.replace(tzinfo=timezone.utc) - tz_offset
 
         now = datetime.now(timezone.utc)
         if expiry_datetime <= now:
