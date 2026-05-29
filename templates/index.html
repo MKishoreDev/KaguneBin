@@ -648,7 +648,8 @@
 
         @media (max-width: 640px) {
             .header-content { padding: 0.75rem 1rem; }
-            
+
+            /* Hide "Create Paste" text button in header on small screens — hamburger has it */
             .nav-right .btn-primary { display: none; }
 
             .hero { padding: 2.5rem 1rem; gap: 2rem; }
@@ -1064,7 +1065,6 @@
             setTimeout(() => toast.remove(), 2500);
         }
 
-        // ── Submit paste ──
         document.getElementById("pasteForm").addEventListener("submit", submitPaste);
 
         async function submitPaste(e) {
@@ -1086,9 +1086,6 @@
                 if (isProtectedCheckbox.checked && password.length < 6)
                     throw new Error("Password must contain at least 6 characters");
 
-                // ── FIX: send timezone offset so server converts local time → UTC correctly
-                // getTimezoneOffset() returns minutes BEHIND UTC (negative for east of UTC)
-                // e.g. IST (UTC+5:30) → -330. We negate it to get +330.
                 const tzOffsetMinutes = -(new Date().getTimezoneOffset());
 
                 const payload = {
