@@ -603,6 +603,22 @@
             margin-top: 0.8rem;
         }
 
+        .time-picker-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .time-picker-field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
         .api-result {
             margin-top: 1rem;
             background: var(--surface-light);
@@ -911,8 +927,18 @@
                         <label for="isExpiry" style="margin-bottom:0;">Set Expiration</label>
                     </div>
                     <div class="time-picker-group hidden" id="timePickerGroup">
-                        <input type="date" id="expiryDate">
-                        <input type="time" id="expiryTime">
+                        <div class="time-picker-field">
+                            <label for="expiryDate">
+                                <i class="fa-solid fa-calendar-days"></i> Date
+                            </label>
+                            <input type="date" id="expiryDate">
+                        </div>
+                        <div class="time-picker-field">
+                            <label for="expiryTime">
+                                <i class="fa-solid fa-clock"></i> Time
+                            </label>
+                            <input type="time" id="expiryTime">
+                        </div>
                     </div>
                 </div>
 
@@ -1065,6 +1091,7 @@
             setTimeout(() => toast.remove(), 2500);
         }
 
+        // ── Submit paste ──
         document.getElementById("pasteForm").addEventListener("submit", submitPaste);
 
         async function submitPaste(e) {
@@ -1085,7 +1112,7 @@
 
                 if (isProtectedCheckbox.checked && password.length < 6)
                     throw new Error("Password must contain at least 6 characters");
-
+                
                 const tzOffsetMinutes = -(new Date().getTimezoneOffset());
 
                 const payload = {
