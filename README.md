@@ -1,302 +1,103 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="KaguneBin Banner"/>
+<img src="assets/banner.png" alt="KaguneBin Banner" width="100%"/>
 
-<br>
+<br/>
 
 # 🩸 KaguneBin
 
 ### Paste Fear. Share Power.
 
-A dark-themed modern pastebin inspired by the world of Tokyo Ghoul.
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-0ea5e9?style=flat-square&logo=postgresql&logoColor=white)](https://neon.tech)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
+[![Status](https://img.shields.io/badge/Status-Stable-22c55e?style=flat-square)](https://kagunebin.vercel.app)
 
-Fast. Minimal. Developer-focused.
+A dark-themed, developer-focused pastebin inspired by the world of Tokyo Ghoul.  
+Fast. Minimal. Deadly simple.
+
+[**Live API Docs →**](https://kagunebin.vercel.app/docs)
 
 </div>
 
 ---
 
-## 📖 About The Project
+## 🩸 What is KaguneBin?
 
-After building [Redirox](https://github.com/MKishoreDev/Redirox), my URL shortener project, I wanted to build something I actually use almost every day.
+In Tokyo Ghoul, a **Kagune** is a ghoul's hidden weapon — concealed until needed, then unfolding instantly to attack, defend, and disappear.
 
-I constantly use pastebin services for:
-- sharing code snippets
-- debugging APIs
-- temporary storage
-- logs
-- testing responses
-- quick collaboration
+That's exactly what a pastebin should be. Your content stays hidden until shared.
 
-Then I thought:
-
-> “Why not build my own pastebin?”
-
-At the same time, I was rewatching Tokyo Ghoul and the entire aesthetic instantly matched the vision I had in mind.
-
-That’s how **KaguneBin** was born.
+KaguneBin is a modern pastebin I built because I use paste services every single day — for code snippets, API debugging, log dumps, quick collaboration, and temporary storage. So I built my own.
 
 ---
 
-## 🩸 Why "KaguneBin"?
+## ✨ Features
 
-In Tokyo Ghoul, a **Kagune** is a ghoul's hidden weapon.
-
-It stays concealed until needed and can:
-- unfold instantly
-- attack
-- defend
-- disappear seamlessly
-
-That concept perfectly matched a pastebin.
-
-Your content stays hidden until shared.
-
-Minimal.  
-Fast.  
-Deadly simple.
+| Feature | Description |
+|---|---|
+| 📝 **Create & Share** | Instant paste creation with unique IDs |
+| 🔒 **Password Protection** | Secure pastes with bcrypt hashing |
+| 🔥 **Burn After Read** | Self-destructing pastes |
+| ⏳ **Expiring Pastes** | Time-limited content |
+| 📄 **Raw Endpoint** | Direct raw content access |
+| 📊 **View Tracking** | Track how many times a paste is seen |
+| 🆔 **UUID-based IDs** | Clean, unique paste identifiers |
+| 📚 **Auto API Docs** | Interactive Swagger & ReDoc documentation |
 
 ---
 
-## ⚔️ Current Development Status
+## 🛠️ Tech Stack
 
-KaguneBin has now moved beyond the early prototype phase.
+| Layer | Technology |
+|---|---|
+| **Language** | ![Python](https://img.shields.io/badge/-Python_3.12-3776AB?style=flat-square&logo=python&logoColor=white) |
+| **Framework** | ![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) |
+| **Database** | ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white) via ![Neon](https://img.shields.io/badge/-Neon_Serverless-0ea5e9?style=flat-square&logo=neon&logoColor=white) |
+| **Validation** | ![Pydantic](https://img.shields.io/badge/-Pydantic-E92063?style=flat-square&logo=pydantic&logoColor=white) |
+| **Security** | ![Passlib](https://img.shields.io/badge/-Passlib_+_bcrypt-4A4A4A?style=flat-square&logo=letsencrypt&logoColor=white) |
+| **Server** | ![Uvicorn](https://img.shields.io/badge/-Uvicorn-499848?style=flat-square&logo=gunicorn&logoColor=white) |
+| **Deployment** | ![Vercel](https://img.shields.io/badge/-Vercel-000000?style=flat-square&logo=vercel&logoColor=white) |
 
-The backend API is fully functional and currently includes:
-
-- ⚡ FastAPI backend
-- 🗄 PostgreSQL database integration
-- 🔐 Password-protected pastes
-- 🔥 Burn-after-read pastes
-- ⏳ Expiring pastes
-- 📄 Raw paste endpoints
-- 📊 View tracking
-- 🧠 Structured JSON responses
-- 📚 Automatic Swagger/OpenAPI documentation
-- 🔑 Secure password hashing using bcrypt
-- 🆔 UUID-based paste generation
-
-The biggest recent upgrade was moving from a temporary in-memory Python dictionary database to a proper PostgreSQL setup.
-
-Right now the main thing pending is the HTML frontend UI, which will be added later once the backend architecture is finalized properly.
-
-A few developer-focused endpoints and testing features currently exist for debugging and development purposes and may be removed before the public release version.
-
----
-
-## 🌐 Live Demo
-
-### API Documentation
-
-- Swagger UI:
-```bash
-https://kagunebin.vercel.app/docs
-```
-
-- ReDoc:
-```bash
-https://kagunebin.vercel.app/redoc
-```
-
-> Public deployment URL will be added later.
-
----
-
-## 🧠 What I'm Learning From This Project
-
-KaguneBin became much more than just “building a pastebin.”
-
-For a long time I used Flask for almost everything and genuinely thought:
-
-> “FastAPI and Flask are basically just two different packages for APIs.”
-
-But after building a real project using FastAPI, I finally understood why FastAPI exists and what problems it actually solves.
-
-While building KaguneBin, I started learning:
-- asynchronous API architecture
-- request validation with Pydantic
-- scalable backend design
-- structured response models
-- OpenAPI standards
-- reusable backend architecture
-- password hashing & security handling
-- database-driven systems
-- lifecycle events in FastAPI
-- production-oriented API structure
-
-One of the biggest mindset changes came from moving away from:
-
-> “Just make it work.”
-
-towards:
-
-> “Understand why systems are designed this way.”
-
----
-
-## 🔄 From Random Codes To UUIDs
-
-One thing I changed during development was how paste IDs are generated.
-
-Earlier, I used a random generator like this:
-
-```python
-def generate_code():
-    values = string.ascii_letters + string.digits
-
-    while True:
-        code = "".join(random.choices(values, k=6))
-        exist = db.links.find_one({"code": code})
-
-        if not exist:
-            return code
-```
-
-It worked, but I slowly realized:
-- collisions still needed manual checking
-- generation logic became repetitive
-- scaling this approach would become annoying later
-
-After learning more about backend architecture and scalable systems, I switched to UUID-based IDs instead:
-
-```python
-paste_id = f"kgn_{uuid4().hex[:8]}"
-```
-
-This simplified the system significantly and made the codebase cleaner and easier to maintain.
-
-It also helped me better understand:
-- uniqueness guarantees
-- scalable identifier generation
-- cleaner backend patterns
-- why modern systems often prefer UUIDs
-
----
-
-## 🗄 Database Journey
-
-KaguneBin originally started with a temporary Python dictionary database while I focused on understanding the API architecture first.
-
-Now the project has been migrated to a proper PostgreSQL-based setup.
-
-This transition taught me a lot about:
-- persistent storage
-- schema design
-- API-to-database interaction
-- scalable backend systems
-- structured queries
-- production-oriented architecture
-
-Interestingly, I had used SQL years ago in older projects without really understanding what databases were actually solving.
-
-This project finally gave me a chance to revisit databases properly and understand them from a backend engineering perspective instead of just “saving data somewhere.”
-
----
-
-## 🧩 API Structure
-
-The backend currently uses:
-- FastAPI lifespan events
-- reusable database functions
-- Pydantic request/response models
-- UTC timezone handling
-- structured API responses
-- password hashing using bcrypt
-- PostgreSQL persistence
-- UUID-based paste IDs
-
-The architecture is intentionally separated into:
-- models
-- database layer
-- reusable database functions
-- route handlers
-- utility logic
-
-This made the codebase significantly cleaner and easier to maintain compared to how I previously structured backend projects.
-
----
-
-
-## ✨ Current Features
-
-- 📝 Create & share pastes
-- 🔒 Password-protected pastes
-- ⏳ Expiring pastes
-- 🔥 Burn-after-reading pastes
-- 📄 Raw content endpoint
-- 📊 View tracking
-- 🧠 Structured JSON responses
-- 📚 Interactive API documentation
-- ⚡ Fast paste retrieval
-- 🗄 PostgreSQL storage
-- 🔑 Secure password hashing
-- 🆔 UUID-based paste IDs
-
----
-
-## 🚧 Planned Features
-
-- 🎨 Syntax highlighting UI
-- 🌑 Full dark-themed frontend
-- 📱 Responsive interface
-- 🔗 Public share pages
-- 📦 PyPI wrapper package
-- 🧹 Cleanup system for expired pastes
-- 🩸 Advanced Tokyo Ghoul-inspired branding
-- 📋 Copy/share utilities
-- 🌐 Public deployment
-
----
-
-## 🧪 Development Philosophy
-
-I don't want KaguneBin to become another bloated platform overloaded with unnecessary features.
-
-The goal is simple:
-
-> A fast, clean, stylish place to instantly share code.
-
----
-
-## 🛠 Tech Stack
-
-### Current Stack
-
-- FastAPI
-- Python
-- PostgreSQL
-- Pydantic
-- Passlib
-- bcrypt
-- Uvicorn
 ---
 
 ## 🚀 Running Locally
 
-### Clone the repository
-
+**1. Clone the repo**
 ```bash
 git clone https://github.com/MKishoreDev/KaguneBin.git
 cd KaguneBin
 ```
 
-### Install dependencies
-
+**2. Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run the server
+**3. Set environment variables**
+```env
+DATABASE_URI=your_neon_postgresql_url
+```
 
+**4. Start the server**
 ```bash
 uvicorn main:app --reload
 ```
 
-### API Docs
-
-```bash
-https://kagunebin.vercel.app/docs
+**5. Open API docs**
 ```
+http://localhost:8000/docs
+```
+
+---
+
+## 🌐 Live Demo
+
+| Interface | URL |
+|---|---|
+| **Swagger UI** | https://kagunebin.vercel.app/docs |
+| **ReDoc** | https://kagunebin.vercel.app/redoc |
 
 ---
 
@@ -311,7 +112,6 @@ https://kagunebin.vercel.app/docs
   "is_protected": false,
   "is_burn_after_read": false,
   "views": 1,
-  "downloads": 0,
   "created_at": "2026-05-27T12:00:00+00:00",
   "expires_at": null
 }
@@ -319,26 +119,37 @@ https://kagunebin.vercel.app/docs
 
 ---
 
-## 🤝 Contributing
+## 🏗️ Architecture
 
-The project is still actively evolving, and ideas, feedback, and contributions are always welcome.
+```
+KaguneBin/
+├── main.py          # App entry point & route handlers
+├── models.py        # Pydantic request/response models
+├── config.py        # Environment configuration
+├── database/
+│   ├── __init__.py  # DB connection & lifespan events
+│   └── funcs.py     # Reusable DB query functions
+└── templates/       # HTML templates
+```
 
 ---
 
-## 📌 Project Note
+## 🤝 Contributing
 
-KaguneBin is an independent developer project inspired by anime aesthetics and developer culture.
+Ideas, feedback, and contributions are welcome. Open an issue or PR anytime.
 
-Tokyo Ghoul and related characters belong to their respective creators and studios.
+---
+
+## 📌 Note
+
+KaguneBin is an independent developer project. Tokyo Ghoul and related characters belong to their respective creators and studios.
 
 ---
 
 <div align="center">
 
-# 🩸 KaguneBin
+Built for developers who prefer dark themes and clean APIs.
 
-### Paste Fear. Share Power.
-
-Built with caffeine, code, PostgreSQL, and anime inspiration.
+**🩸 [kagunebin.vercel.app](https://kagunebin.vercel.app)**
 
 </div>
