@@ -3,7 +3,6 @@ from typing import Optional
 
 from database import get_conn
 
-
 def insert_paste(
     *,
     paste_id: str,
@@ -54,7 +53,6 @@ def insert_paste(
 
         return cur.fetchone()
 
-
 def get_paste(paste_id: str) -> Optional[dict]:
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute(
@@ -63,7 +61,6 @@ def get_paste(paste_id: str) -> Optional[dict]:
         )
 
         return cur.fetchone()
-
 
 def increment_views(paste_id: str) -> dict:
     sql = """
@@ -78,7 +75,6 @@ def increment_views(paste_id: str) -> dict:
 
         return cur.fetchone()
 
-
 def increment_downloads(paste_id: str) -> dict:
     sql = """
         UPDATE pastes
@@ -91,17 +87,6 @@ def increment_downloads(paste_id: str) -> dict:
         cur.execute(sql, (paste_id,))
 
         return cur.fetchone()
-
-
-def delete_paste(paste_id: str) -> bool:
-    with get_conn() as conn, conn.cursor() as cur:
-        cur.execute(
-            "DELETE FROM pastes WHERE id = %s;",
-            (paste_id,),
-        )
-
-        return cur.rowcount > 0
-
 
 def list_pastes() -> list[dict]:
     with get_conn() as conn, conn.cursor() as cur:
