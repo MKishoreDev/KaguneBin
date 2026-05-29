@@ -23,16 +23,13 @@
             --text-secondary: #9ea6b5;
             --border-color: #2a3145;
             --accent-glow: rgba(255, 23, 68, 0.16);
-            --blood-red: #dc143c;
         }
 
-        html,
-        body {
+        html, body {
             min-height: 100%;
             background: var(--background);
             color: var(--text-primary);
             font-family: "Inter", "Segoe UI", sans-serif;
-            overflow: hidden;
         }
 
         body::before {
@@ -59,41 +56,30 @@
         }
 
         @keyframes pulseGlow {
-            0%, 100% {
-                opacity: 0.7;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.03);
-            }
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50%       { opacity: 1;   transform: scale(1.03); }
         }
 
         @keyframes float {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-12px);
-            }
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-10px); }
         }
 
+        /* ── HEADER ── */
         header {
-            position: fixed;
+            position: sticky;
             top: 0;
             width: 100%;
             z-index: 999;
             backdrop-filter: blur(14px);
-            background: rgba(10, 14, 24, 0.82);
+            background: rgba(10, 14, 24, 0.88);
             border-bottom: 1px solid var(--border-color);
         }
 
         .header-content {
             max-width: 1400px;
             margin: auto;
-            padding: 1rem 2rem;
+            padding: 0.85rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -102,39 +88,38 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.9rem;
+            gap: 0.75rem;
             text-decoration: none;
             color: var(--text-primary);
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 700;
         }
 
         .logo img {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             object-fit: contain;
-            filter: drop-shadow(0 0 14px rgba(255, 23, 68, 0.4));
+            filter: drop-shadow(0 0 12px rgba(255, 23, 68, 0.4));
         }
 
-        .logo span:last-child {
-            color: var(--primary-color);
-        }
+        .logo span { color: var(--primary-color); }
 
+        /* ── MAIN ── */
         .error-wrapper {
-            min-height: 100vh;
+            min-height: calc(100vh - 60px);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 7rem 2rem 3rem;
+            padding: 3rem 1.25rem 5rem; /* bottom pad clears footer */
         }
 
         .error-box {
             width: 100%;
-            max-width: 760px;
-            background: rgba(17, 21, 34, 0.82);
+            max-width: 720px;
+            background: rgba(17, 21, 34, 0.88);
             border: 1px solid rgba(255, 23, 68, 0.18);
-            border-radius: 28px;
-            padding: 4rem 3rem;
+            border-radius: 24px;
+            padding: 3.5rem 2.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -147,113 +132,92 @@
             content: "";
             position: absolute;
             inset: 0;
-            background:
-                radial-gradient(circle at top right, rgba(255, 23, 68, 0.12), transparent 30%);
+            background: radial-gradient(circle at top right, rgba(255, 23, 68, 0.12), transparent 30%);
             pointer-events: none;
         }
 
         .error-icon {
-            width: 130px;
-            height: 130px;
-            margin: auto auto 2rem;
-            border-radius: 30px;
-            background: linear-gradient(
-                135deg,
-                rgba(255, 23, 68, 0.18),
-                rgba(194, 24, 63, 0.08)
-            );
-
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 1.8rem;
+            border-radius: 26px;
+            background: linear-gradient(135deg, rgba(255, 23, 68, 0.18), rgba(194, 24, 63, 0.08));
             border: 1px solid rgba(255, 23, 68, 0.25);
-
             display: flex;
             align-items: center;
             justify-content: center;
-
-            font-size: 4rem;
-
-            animation:
-                pulseGlow 4s ease-in-out infinite,
-                float 4s ease-in-out infinite;
+            font-size: 3.5rem;
+            animation: pulseGlow 4s ease-in-out infinite, float 4s ease-in-out infinite;
         }
 
         .error-status {
             color: var(--primary-color);
-            font-size: 0.9rem;
-            letter-spacing: 0.25rem;
+            font-size: 0.82rem;
+            letter-spacing: 0.22rem;
             text-transform: uppercase;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .error-code {
-            font-size: 7rem;
+            font-size: 6.5rem;
             line-height: 1;
             font-weight: 900;
             margin-bottom: 1rem;
-
-            background: linear-gradient(
-                180deg,
-                #ffffff 0%,
-                #ffd4dd 45%,
-                #ff1744 100%
-            );
-
+            background: linear-gradient(180deg, #ffffff 0%, #ffd4dd 45%, #ff1744 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .error-title {
-            font-size: 2.2rem;
+            font-size: 1.9rem;
             margin-bottom: 1rem;
             font-weight: 700;
+            line-height: 1.3;
         }
 
         .error-description {
-            max-width: 560px;
-            margin: auto;
+            max-width: 520px;
+            margin: 0 auto;
             color: var(--text-secondary);
             line-height: 1.8;
-            font-size: 1rem;
+            font-size: 0.97rem;
         }
 
         .quote {
-            margin-top: 1.8rem;
-            color: rgba(255,255,255,0.55);
+            margin-top: 1.6rem;
+            color: rgba(255,255,255,0.45);
             font-style: italic;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            padding: 0 1rem;
         }
 
         .actions {
-            margin-top: 2.5rem;
+            margin-top: 2.2rem;
             display: flex;
             justify-content: center;
             gap: 1rem;
             flex-wrap: wrap;
         }
 
-        .btn-primary,
-        .btn-secondary {
-            padding: 0.95rem 1.6rem;
-            border-radius: 14px;
+        .btn-primary, .btn-secondary {
+            padding: 0.9rem 1.5rem;
+            border-radius: 12px;
             text-decoration: none;
             font-weight: 600;
             transition: 0.3s;
+            font-size: 0.95rem;
+            display: inline-block;
         }
 
         .btn-primary {
-            background: linear-gradient(
-                135deg,
-                var(--primary-color),
-                var(--primary-dark)
-            );
-
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
-
-            box-shadow: 0 12px 30px rgba(255, 23, 68, 0.22);
+            box-shadow: 0 10px 28px rgba(255, 23, 68, 0.22);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 35px rgba(255, 23, 68, 0.35);
+            box-shadow: 0 0 32px rgba(255, 23, 68, 0.35);
         }
 
         .btn-secondary {
@@ -268,16 +232,15 @@
             background: var(--accent-glow);
         }
 
+        /* ── FOOTER ── */
         footer {
-            position: fixed;
-            bottom: 0;
             width: 100%;
-            padding: 1rem 2rem;
+            padding: 1rem 1.5rem;
             text-align: center;
             border-top: 1px solid var(--border-color);
             background: rgba(10, 14, 24, 0.78);
             color: var(--text-secondary);
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             backdrop-filter: blur(12px);
         }
 
@@ -286,36 +249,55 @@
             text-decoration: none;
         }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+        footer a:hover { text-decoration: underline; }
 
-        @media (max-width: 768px) {
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .error-wrapper {
+                padding: 2rem 1rem 3rem;
+                min-height: calc(100vh - 56px);
+            }
 
             .error-box {
-                padding: 3rem 1.5rem;
+                padding: 2.2rem 1.25rem;
+                border-radius: 18px;
             }
 
-            .error-code {
-                font-size: 4.8rem;
+            .error-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.6rem;
+                border-radius: 18px;
+                margin-bottom: 1.2rem;
             }
 
-            .error-title {
-                font-size: 1.7rem;
-            }
+            .error-code { font-size: 4.5rem; }
+
+            .error-title { font-size: 1.35rem; }
+
+            .error-description { font-size: 0.9rem; }
 
             .actions {
                 flex-direction: column;
+                gap: 0.75rem;
             }
 
-            .btn-primary,
-            .btn-secondary {
+            .btn-primary, .btn-secondary {
                 width: 100%;
+                text-align: center;
+                padding: 0.9rem 1rem;
             }
 
-            .logo {
-                font-size: 1.1rem;
-            }
+            .logo { font-size: 1.1rem; }
+            .logo img { width: 32px; height: 32px; }
+
+            footer { font-size: 0.78rem; padding: 0.85rem 1rem; }
+        }
+
+        @media (max-width: 380px) {
+            .error-code { font-size: 3.8rem; }
+            .error-title { font-size: 1.15rem; }
+            .error-box { padding: 1.8rem 1rem; }
         }
     </style>
 </head>
@@ -324,37 +306,23 @@
 
 <header>
     <div class="header-content">
-
         <a href="/" class="logo">
             <img src="/assets/logo.png" alt="KaguneBin Logo">
-
-            <div>
-                Kagune<span>Bin</span>
-            </div>
+            <div>Kagune<span>Bin</span></div>
         </a>
-
     </div>
 </header>
 
 <main class="error-wrapper">
-
     <div class="error-box">
 
-        <div class="error-icon">
-            🩸
-        </div>
+        <div class="error-icon">🩸</div>
 
-        <div class="error-status">
-            System Error
-        </div>
+        <div class="error-status">System Error</div>
 
-        <div class="error-code">
-            404
-        </div>
+        <div class="error-code">404</div>
 
-        <h1 class="error-title">
-            This paste vanished into the shadows.
-        </h1>
+        <h1 class="error-title">This paste vanished into the shadows.</h1>
 
         <p class="error-description">
             The page you are searching for no longer exists, expired,
@@ -363,30 +331,20 @@
         </p>
 
         <p class="quote">
-            “Sometimes the only way to survive is to disappear.”
+            "Sometimes the only way to survive is to disappear."
         </p>
 
         <div class="actions">
-
-            <a href="/" class="btn-primary">
-                ← Return Home
-            </a>
-
-            <a href="/paste" class="btn-secondary">
-                ✨ Create Paste
-            </a>
-
+            <a href="/" class="btn-primary">← Return Home</a>
+            <a href="/" onclick="event.preventDefault(); window.history.back()" class="btn-secondary">✨ Create Paste</a>
         </div>
 
     </div>
-
 </main>
 
 <footer>
     © 2026 KaguneBin • Built with FastAPI & PostgreSQL •
-    <a href="https://github.com/MKishoreDev/KaguneBin" target="_blank">
-        GitHub Repository
-    </a>
+    <a href="https://github.com/MKishoreDev/KaguneBin" target="_blank">GitHub Repository</a>
 </footer>
 
 </body>
