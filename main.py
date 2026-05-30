@@ -152,6 +152,9 @@ def validate_password(data: dict, password: str | None):
 def home():
     return FileResponse("templates/index.html")
 
+@app.get("/docs", response_class=HTMLResponse)
+def docs():
+    return FileResponse("templates/docs.html")
 
 @app.get("/p/{paste_id}", response_class=HTMLResponse)
 def paste_page_routed(paste_id: str):
