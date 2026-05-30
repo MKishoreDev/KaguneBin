@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KaguneBin Documentation — API & Python SDK</title>
+<meta name="description" content="Official KaguneBin documentation. Learn the REST API, Python SDK, Telegram bot integration, and more." />
+<meta property="og:title" content="KaguneBin Documentation" />
+<meta property="og:description" content="Official API and Python SDK Documentation for KaguneBin." />
+<meta property="og:image" content="https://kagunebin.vercel.app/assets/banner.png" />
+<meta property="og:url" content="https://kagunebin.vercel.app/docs" />
+<meta property="og:type" content="website" />
+
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --primary-color: #ff1744;
+    --primary-dark: #c2183f;
+    --background: #090b14;
+    --surface: #111522;
+    --surface-light: #181d2c;
+    --text-primary: #ffffff;
+    --text-secondary: #a6acb9;
+    --border-color: #2a3145;
+    --accent-glow: rgba(255, 23, 68, 0.16);
+    --blood-red: #dc143c;
+    --success: #4caf50;
+    --danger: #ff5f6d;
+    --warning: #ffb300;
+    --info: #29b6f6;
+}
+
+html.light-mode {
+    --primary-color: #e91e63;
+    --primary-dark: #c2185b;
+    --background: #f4f5f8;
+    --surface: #ffffff;
+    --surface-light: #fafafa;
+    --text-primary: #1f1f1f;
+    --text-secondary: #6e6e6e;
+    --border-color: #e2e2e2;
+    --accent-glow: rgba(233, 30, 99, 0.12);
+}
+
+html, body {
+    min-height: 100%;
+    background: var(--background);
+    color: var(--text-primary);
+    font-family: "Inter", sans-serif;
+    transition: 0.3s ease;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 23, 68, 0.08), transparent 35%),
+        radial-gradient(circle at 80% 80%, rgba(220, 20, 60, 0.06), transparent 35%);
+    animation: bgFloat 14s ease-in-out infinite;
+}
+
+@keyframes bgFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* ── HEADER ── */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    backdrop-filter: blur(16px);
+    background: rgba(10, 14, 24, 0.92);
+    border-bottom: 1px solid var(--border-color);
+}
+html.light-mode header { background: rgba(255, 255, 255, 0.92); }
+
+.header-content {
+    max-width: 1400px;
+    margin: auto;
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.logo img {
+    width: 40px; height: 40px; object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(255, 23, 68, 0.45));
+}
+.logo .logo-fallback {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 1.1rem;
+    box-shadow: 0 0 18px var(--accent-glow);
+}
+.logo span { color: var(--primary-color); }
+
+nav { display: flex; align-items: center; gap: 1.8rem; }
+nav a {
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 0.95rem; transition: 0.3s; position: relative; white-space: nowrap;
+}
+nav a:hover, nav a.active { color: var(--primary-color); }
+nav a::after {
+    content: ""; position: absolute; width: 0; left: 0; bottom: -6px;
+    height: 2px; background: var(--primary-color); transition: 0.3s;
+}
+nav a:hover::after, nav a.active::after { width: 100%; }
+
+.nav-right { display: flex; gap: 0.75rem; align-items: center; flex-shrink: 0; }
+
+.theme-toggle {
+    width: 40px; height: 40px; border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--surface); color: var(--text-secondary);
+    cursor: pointer; transition: 0.3s; font-size: 1rem; flex-shrink: 0;
+}
+.theme-toggle:hover {
+    border-color: var(--primary-color); color: var(--primary-color);
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.hamburger {
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    gap: 5px; width: 40px; height: 40px; border-radius: 10px;
+    border: 1px solid var(--border-color); background: var(--surface);
+    cursor: pointer; transition: 0.3s; flex-shrink: 0;
+}
+.hamburger:hover { border-color: var(--primary-color); box-shadow: 0 0 16px var(--accent-glow); }
+.hamburger span {
+    display: block; width: 18px; height: 2px;
+    background: var(--text-secondary); border-radius: 2px; transition: 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+    display: none; position: fixed; inset: 0; z-index: 998;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+}
+.mobile-menu.open { display: block; }
+.mobile-menu-drawer {
+    position: absolute; top: 0; right: 0;
+    width: 280px; max-width: 85vw; height: 100%;
+    background: var(--surface); border-left: 1px solid var(--border-color);
+    padding: 5rem 1.5rem 2rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.4);
+    transform: translateX(100%); transition: transform 0.3s ease;
+}
+.mobile-menu.open .mobile-menu-drawer { transform: translateX(0); }
+.mobile-menu-drawer a {
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 1.05rem; padding: 0.9rem 1rem; border-radius: 10px;
+    transition: 0.2s; border: 1px solid transparent;
+}
+.mobile-menu-drawer a:hover, .mobile-menu-drawer a.active {
+    color: var(--primary-color); background: var(--accent-glow);
+    border-color: var(--border-color);
+}
+
+/* ── BUTTONS ── */
+.btn-primary {
+    border: none; border-radius: 12px;
+    padding: 0.85rem 1.4rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white; font-weight: 600; cursor: pointer; transition: 0.3s;
+    box-shadow: 0 8px 24px rgba(255, 23, 68, 0.2);
+    font-size: 0.9rem; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    text-decoration: none;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(255, 23, 68, 0.3); }
+
+.btn-secondary {
+    border: 1px solid var(--border-color);
+    background: transparent; color: var(--text-secondary);
+    border-radius: 12px; padding: 0.85rem 1.4rem;
+    cursor: pointer; transition: 0.3s; font-size: 0.9rem;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    text-decoration: none;
+}
+.btn-secondary:hover {
+    border-color: var(--primary-color); color: var(--primary-color);
+    background: var(--accent-glow);
+}
+
+/* ── HERO ── */
+.hero-docs {
+    max-width: 1100px;
+    margin: auto;
+    padding: 5rem 1.5rem 3rem;
+    text-align: center;
+}
+.hero-tagline {
+    display: inline-flex; align-items: center; gap: 0.7rem;
+    margin-bottom: 1.4rem; color: var(--text-secondary);
+    font-size: 0.85rem; padding: 0.45rem 1rem;
+    border: 1px solid var(--border-color); border-radius: 100px;
+    background: var(--surface);
+}
+.hero-tagline-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--primary-color);
+    box-shadow: 0 0 12px var(--primary-color);
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+.hero-docs h1 {
+    font-size: 4rem; line-height: 1.05; font-weight: 800;
+    margin-bottom: 1.2rem;
+    background: linear-gradient(180deg, #ffffff 0%, #ffd4dd 40%, #ff1744 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+html.light-mode .hero-docs h1 {
+    background: linear-gradient(180deg, #1f1f1f 0%, #ff4f7d 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-subtitle {
+    font-size: 1.15rem; color: var(--text-primary);
+    font-weight: 500; margin-bottom: 1rem;
+}
+.hero-description {
+    color: var(--text-secondary); line-height: 1.8;
+    max-width: 720px; margin: 0 auto 2rem;
+    font-size: 0.98rem;
+}
+.hero-buttons {
+    display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;
+}
+
+/* ── LAYOUT ── */
+.docs-layout {
+    max-width: 1400px; margin: auto;
+    padding: 2rem 1.5rem 4rem;
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: 2.5rem;
+}
+
+.sidebar {
+    position: sticky; top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+.sidebar h4 {
+    font-size: 0.78rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--primary-color);
+    margin: 1.4rem 0 0.6rem; font-weight: 700;
+}
+.sidebar h4:first-child { margin-top: 0; }
+.sidebar a {
+    display: block; color: var(--text-secondary);
+    text-decoration: none; font-size: 0.9rem;
+    padding: 0.4rem 0.7rem; border-radius: 8px;
+    transition: 0.2s; border-left: 2px solid transparent;
+}
+.sidebar a:hover {
+    color: var(--primary-color);
+    background: var(--accent-glow);
+    border-left-color: var(--primary-color);
+}
+
+.docs-content { min-width: 0; }
+
+.docs-section {
+    margin-bottom: 4rem; scroll-margin-top: 90px;
+}
+.docs-section h2 {
+    font-size: 2rem; margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.7rem;
+}
+.docs-section h2 i { color: var(--primary-color); font-size: 1.6rem; }
+.docs-section h3 {
+    font-size: 1.25rem; margin: 2rem 0 0.8rem;
+    color: var(--text-primary);
+}
+.docs-section p {
+    color: var(--text-secondary); line-height: 1.8;
+    margin-bottom: 1rem; font-size: 0.97rem;
+}
+.docs-section ul {
+    color: var(--text-secondary); line-height: 1.9;
+    padding-left: 1.4rem; margin-bottom: 1rem;
+}
+.docs-section ul li::marker { color: var(--primary-color); }
+
+/* ── CARDS ── */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem; margin-top: 1.5rem;
+}
+.feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem; transition: 0.3s;
+}
+.feature-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--blood-red);
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.22);
+}
+.feature-card .feature-icon {
+    font-size: 1.6rem; color: var(--primary-color); margin-bottom: 0.8rem;
+}
+.feature-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+.feature-card p { color: var(--text-secondary); line-height: 1.65; font-size: 0.88rem; margin: 0; }
+
+/* ── CODE BLOCKS ── */
+.code-block {
+    background: var(--surface); border-radius: 14px;
+    border: 1px solid rgba(255, 23, 68, 0.15); overflow: hidden;
+    margin: 1rem 0 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+.code-block-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.7rem 1.2rem; border-bottom: 1px solid var(--border-color);
+    background: var(--surface-light);
+}
+.code-block-lang {
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--text-secondary); font-size: 0.82rem;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+}
+.code-block-lang::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--primary-color);
+    box-shadow: 0 0 8px var(--primary-color);
+}
+.copy-btn {
+    background: transparent; border: 1px solid var(--border-color);
+    color: var(--text-secondary); padding: 0.35rem 0.85rem;
+    border-radius: 8px; cursor: pointer; transition: 0.3s;
+    font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.copy-btn:hover {
+    border-color: var(--primary-color); color: var(--primary-color);
+    background: var(--accent-glow);
+}
+.code-block pre {
+    padding: 1.2rem 1.4rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.86rem; line-height: 1.7;
+    overflow-x: auto; color: #d7dcee;
+}
+html.light-mode .code-block pre { color: #2f2f2f; }
+.code-block pre .kw { color: #ff5370; }
+.code-block pre .str { color: #7ec699; }
+.code-block pre .num { color: #f78c6c; }
+.code-block pre .cm { color: #6b7280; font-style: italic; }
+.code-block pre .fn { color: #82aaff; }
+.code-block pre .key { color: #c792ea; }
+
+/* ── ENDPOINT ── */
+.endpoint {
+    background: var(--surface); border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+}
+.endpoint-header {
+    display: flex; align-items: center; gap: 0.8rem;
+    margin-bottom: 0.8rem; flex-wrap: wrap;
+}
+.method {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700; font-size: 0.78rem;
+    padding: 0.3rem 0.7rem; border-radius: 6px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.method.get { background: rgba(41, 182, 246, 0.15); color: var(--info); border: 1px solid rgba(41, 182, 246, 0.3); }
+.method.post { background: rgba(76, 175, 80, 0.15); color: var(--success); border: 1px solid rgba(76, 175, 80, 0.3); }
+.method.delete { background: rgba(255, 95, 109, 0.15); color: var(--danger); border: 1px solid rgba(255, 95, 109, 0.3); }
+.endpoint-path {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.95rem; color: var(--text-primary); font-weight: 600;
+    word-break: break-all;
+}
+.endpoint-desc { color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.92rem; }
+
+/* ── PARAMS TABLE ── */
+.params-table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; background: var(--surface-light);
+    border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--border-color);
+    font-size: 0.88rem;
+}
+.params-table th, .params-table td {
+    padding: 0.8rem 1rem; text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.params-table th {
+    background: var(--surface); color: var(--primary-color);
+    font-weight: 600; font-size: 0.78rem;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.params-table td { color: var(--text-secondary); }
+.params-table tr:last-child td { border-bottom: none; }
+.params-table code {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--text-primary); font-size: 0.85rem;
+    background: var(--background); padding: 0.15rem 0.4rem; border-radius: 4px;
+}
+.params-table .required { color: var(--danger); font-weight: 600; font-size: 0.75rem; }
+.params-table .optional { color: var(--text-secondary); font-size: 0.75rem; }
+
+.table-wrapper { overflow-x: auto; }
+
+/* ── CALLOUT ── */
+.callout {
+    background: var(--surface); border-left: 3px solid var(--primary-color);
+    border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;
+    display: flex; gap: 0.8rem; align-items: flex-start;
+}
+.callout i { color: var(--primary-color); font-size: 1.1rem; margin-top: 0.15rem; }
+.callout p { margin: 0; color: var(--text-secondary); font-size: 0.92rem; }
+.callout strong { color: var(--text-primary); }
+
+/* ── BASE URL ── */
+.base-url {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-family: "JetBrains Mono", monospace;
+    background: var(--surface-light); border: 1px solid var(--border-color);
+    padding: 0.6rem 1rem; border-radius: 10px; color: var(--primary-color);
+    font-size: 0.9rem; margin-bottom: 1rem;
+}
+
+/* ── FAQ ── */
+.faq-item {
+    background: var(--surface); border: 1px solid var(--border-color);
+    border-radius: 12px; margin-bottom: 0.8rem; overflow: hidden;
+}
+.faq-question {
+    width: 100%; text-align: left; padding: 1.1rem 1.3rem;
+    background: transparent; border: none; color: var(--text-primary);
+    font-size: 0.98rem; font-weight: 600; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: inherit; transition: 0.3s;
+}
+.faq-question:hover { color: var(--primary-color); }
+.faq-question i { color: var(--primary-color); transition: 0.3s; }
+.faq-item.open .faq-question i { transform: rotate(180deg); }
+.faq-answer {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 1.3rem;
+    color: var(--text-secondary); line-height: 1.7; font-size: 0.93rem;
+}
+.faq-item.open .faq-answer { max-height: 500px; padding: 0 1.3rem 1.2rem; }
+
+/* ── STATUS CODES ── */
+.status-codes { display: grid; gap: 0.8rem; }
+.status-code-row {
+    display: grid; grid-template-columns: 100px 1fr;
+    gap: 1rem; padding: 1rem 1.2rem;
+    background: var(--surface); border: 1px solid var(--border-color);
+    border-radius: 10px; align-items: center;
+}
+.status-code-badge {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700; font-size: 0.85rem; text-align: center;
+    padding: 0.3rem 0.5rem; border-radius: 6px;
+}
+.status-400 { background: rgba(255, 179, 0, 0.15); color: var(--warning); border: 1px solid rgba(255, 179, 0, 0.3); }
+.status-401 { background: rgba(255, 95, 109, 0.15); color: var(--danger); border: 1px solid rgba(255, 95, 109, 0.3); }
+.status-404 { background: rgba(255, 95, 109, 0.15); color: var(--danger); border: 1px solid rgba(255, 95, 109, 0.3); }
+.status-410 { background: rgba(156, 39, 176, 0.15); color: #ce93d8; border: 1px solid rgba(156, 39, 176, 0.3); }
+.status-500 { background: rgba(220, 20, 60, 0.15); color: var(--blood-red); border: 1px solid rgba(220, 20, 60, 0.3); }
+.status-200 { background: rgba(76, 175, 80, 0.15); color: var(--success); border: 1px solid rgba(76, 175, 80, 0.3); }
+.status-code-row p { margin: 0; color: var(--text-secondary); font-size: 0.92rem; }
+.status-code-row strong { color: var(--text-primary); display: block; margin-bottom: 0.2rem; font-size: 0.95rem; }
+
+/* ── INLINE CODE ── */
+code.inline {
+    font-family: "JetBrains Mono", monospace;
+    background: var(--surface-light); border: 1px solid var(--border-color);
+    color: var(--primary-color); padding: 0.15rem 0.45rem;
+    border-radius: 5px; font-size: 0.85em;
+}
+
+/* ── FOOTER ── */
+footer {
+    margin-top: 2rem; padding: 2.5rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center; background: var(--surface);
+    color: var(--text-secondary); font-size: 0.9rem;
+}
+footer .footer-tagline {
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--text-primary); margin-bottom: 0.5rem;
+}
+footer .footer-tagline span { color: var(--primary-color); }
+footer .footer-links { margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+footer .footer-links a { color: var(--text-secondary); text-decoration: none; transition: 0.3s; }
+footer .footer-links a:hover { color: var(--primary-color); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 950px) {
+    nav { display: none; }
+    .hamburger { display: flex; }
+    .docs-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .hero-docs h1 { font-size: 3rem; }
+}
+@media (max-width: 640px) {
+    .header-content { padding: 0.75rem 1rem; }
+    .nav-right .btn-primary { display: none; }
+    .hero-docs { padding: 3rem 1rem 2rem; }
+    .hero-docs h1 { font-size: 2.3rem; }
+    .hero-buttons { flex-direction: column; }
+    .hero-buttons .btn-primary, .hero-buttons .btn-secondary { width: 100%; justify-content: center; }
+    .docs-section h2 { font-size: 1.5rem; }
+    .docs-section h3 { font-size: 1.1rem; }
+    .code-block pre { font-size: 0.78rem; padding: 1rem; }
+    .status-code-row { grid-template-columns: 80px 1fr; }
+    .endpoint { padding: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-content">
+        <a href="/" class="logo">
+            <div class="logo-fallback">K</div>
+            Kagune<span>Bin</span>
+        </a>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/#create">Create Paste</a>
+            <a href="/docs" class="active">API Docs</a>
+            <a href="https://github.com/MKishoreDev/KaguneBin" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <div class="nav-right">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+            <a href="/" class="btn-primary"><i class="fa-solid fa-plus"></i> New Paste</a>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-drawer">
+        <a href="/">🏠 Home</a>
+        <a href="/#create">✨ Create Paste</a>
+        <a href="/docs" class="active">📖 API Docs</a>
+        <a href="https://github.com/MKishoreDev/KaguneBin" target="_blank" rel="noopener">🐙 GitHub</a>
+    </div>
+</div>
+
+<!-- HERO -->
+<section class="hero-docs">
+    <div class="hero-tagline">
+        <span class="hero-tagline-dot"></span>
+        Documentation v1.0
+    </div>
+    <h1>KaguneBin Documentation</h1>
+    <p class="hero-subtitle">Official API and Python SDK Documentation</p>
+    <p class="hero-description">
+        KaguneBin is a modern paste sharing platform built for developers. Create secure, shareable pastes
+        with password protection, expiration support, burn-after-read functionality, and syntax highlighting.
+    </p>
+    <div class="hero-buttons">
+        <a href="#python-sdk" class="btn-primary"><i class="fa-brands fa-python"></i> View SDK</a>
+        <a href="#api-reference" class="btn-secondary"><i class="fa-solid fa-code"></i> API Reference</a>
+        <a href="https://github.com/MKishoreDev/KaguneBin" target="_blank" rel="noopener" class="btn-secondary"><i class="fa-brands fa-github"></i> GitHub</a>
+    </div>
+</section>
+
+<!-- DOCS LAYOUT -->
+<div class="docs-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h4>Getting Started</h4>
+        <a href="#about">About KaguneBin</a>
+        <a href="#features">Website Features</a>
+
+        <h4>REST API</h4>
+        <a href="#api-reference">Overview</a>
+        <a href="#api-status">GET /status</a>
+        <a href="#api-create">POST /paste</a>
+        <a href="#api-get">GET /api/paste/{id}</a>
+        <a href="#api-raw">GET /raw/{id}</a>
+        <a href="#api-download">GET /download/{id}</a>
+
+        <h4>Python SDK</h4>
+        <a href="#python-sdk">Installation</a>
+        <a href="#sdk-create">create()</a>
+        <a href="#sdk-get">get()</a>
+        <a href="#sdk-raw">raw()</a>
+        <a href="#sdk-download">download()</a>
+        <a href="#sdk-syntaxes">syntaxes()</a>
+        <a href="#sdk-valid">is_valid_syntax()</a>
+
+        <h4>Integrations</h4>
+        <a href="#telegram-bot">Telegram Bot</a>
+        <a href="#curl">cURL Examples</a>
+
+        <h4>Reference</h4>
+        <a href="#errors">Error Handling</a>
+        <a href="#faq">FAQ</a>
+        <a href="#open-source">Open Source</a>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="docs-content">
+
+        <!-- ABOUT -->
+        <section class="docs-section" id="about">
+            <h2><i class="fa-solid fa-circle-info"></i> About KaguneBin</h2>
+            <p>
+                <strong>KaguneBin</strong> is a fast, minimal, anonymous pastebin built for developers who value
+                privacy and simplicity. Inspired by the dark aesthetic of <em>Tokyo Ghoul</em>, the platform pairs
+                a striking visual identity with a developer-first feature set — making it the perfect home for
+                code snippets, logs, configuration files, and temporary data.
+            </p>
+            <p>
+                KaguneBin was built because most existing paste services are either bloated with ads, tied to
+                accounts, or lack the privacy controls developers actually need. KaguneBin is the opposite:
+                fully anonymous by default, ridiculously fast, and free of distractions.
+            </p>
+
+            <h3>Core Principles</h3>
+            <ul>
+                <li><strong>Privacy-focused</strong> — no accounts, no tracking, no nonsense.</li>
+                <li><strong>Developer-first</strong> — clean REST API, official Python SDK, raw access.</li>
+                <li><strong>Fast & lightweight</strong> — powered by FastAPI and PostgreSQL.</li>
+                <li><strong>Tokyo Ghoul inspired</strong> — dark, blood-red aesthetic with a sharp edge.</li>
+                <li><strong>Open source</strong> — fully transparent and community-driven.</li>
+            </ul>
+
+            <h3>Highlight Features</h3>
+            <div class="cards-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+                    <h3>Password Protection</h3>
+                    <p>Lock sensitive pastes behind a password.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-fire"></i></div>
+                    <h3>Burn After Read</h3>
+                    <p>Auto-destroy paste content after a single view.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-clock"></i></div>
+                    <h3>Expiration Support</h3>
+                    <p>Set a future expiry date and time for any paste.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3>Raw Content Access</h3>
+                    <p>Fetch plaintext directly via the raw endpoint.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-download"></i></div>
+                    <h3>Downloads</h3>
+                    <p>Download pastes as files with proper extensions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-paintbrush"></i></div>
+                    <h3>Syntax Highlighting</h3>
+                    <p>Beautiful highlighting across many languages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Statistics</h3>
+                    <p>Track view and download counts per paste.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-brands fa-python"></i></div>
+                    <h3>Python SDK</h3>
+                    <p>Official SDK for automation and bot integrations.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="docs-section" id="features">
+            <h2><i class="fa-solid fa-star"></i> Website Features</h2>
+            <p>Everything KaguneBin offers, in one place.</p>
+
+            <div class="cards-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                    <h3>Create Pastes</h3>
+                    <p>Share code snippets, logs, notes, and text instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Password Protected</h3>
+                    <p>Require a password before viewing paste content.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-fire"></i></div>
+                    <h3>Burn After Read</h3>
+                    <p>Auto-delete content after the first access.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <h3>Expiring Pastes</h3>
+                    <p>Automatically remove content at a chosen date and time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3>Syntax Highlighting</h3>
+                    <p>Support for multiple programming languages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-file-arrow-down"></i></div>
+                    <h3>Downloads</h3>
+                    <p>Download content as files with appropriate extensions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-chart-simple"></i></div>
+                    <h3>Statistics</h3>
+                    <p>Track views and downloads for each paste.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- API REFERENCE -->
+        <section class="docs-section" id="api-reference">
+            <h2><i class="fa-solid fa-cloud"></i> REST API Reference</h2>
+            <p>The KaguneBin API is a simple REST interface. All endpoints return JSON unless otherwise noted.</p>
+
+            <h3>Base URL</h3>
+            <div class="base-url">
+                <i class="fa-solid fa-link"></i> https://kagunebin.vercel.app
+            </div>
+
+            <div class="callout">
+                <i class="fa-solid fa-lightbulb"></i>
+                <p><strong>Tip:</strong> All requests use HTTPS. No authentication is required to create pastes — KaguneBin is anonymous by design.</p>
+            </div>
+
+            <!-- GET /status -->
+            <div class="endpoint" id="api-status">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/status</span>
+                </div>
+                <p class="endpoint-desc">Health check endpoint. Returns service status.</p>
+
+                <h3 style="font-size: 1rem; margin-top: 1rem;">Response</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-lang">JSON</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+<pre>{
+  <span class="key">"status"</span>: <span class="str">"ok"</span>,
+  <span class="key">"service"</span>: <span class="str">"KaguneBin"</span>
+}</pre>
+                </div>
+            </div>
+
+            <!-- POST /paste -->
+            <div class="endpoint" id="api-create">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/paste</span>
+                </div>
+                <p class="endpoint-desc">Create a new paste. Returns the paste ID and shareable URL.</p>
+
+                <h3 style="font-size: 1rem;">Request Parameters</h3>
+                <div class="table-wrapper">
+                <table class="params-table">
+                    <thead>
+                        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>title</code></td><td>string</td><td><span class="optional">optional</span></td><td>Title of the paste (defaults to <code>""</code>).</td></tr>
+                        <tr><td><code>content</code></td><td>string</td><td><span class="required">required</span></td><td>Paste body content.</td></tr>
+                        <tr><td><code>syntax</code></td><td>string</td><td><span class="optional">optional</span></td><td>Syntax language (e.g. <code>python</code>). Defaults to <code>"text"</code>.</td></tr>
+                        <tr><td><code>security</code></td><td>object</td><td><span class="optional">optional</span></td><td>Nested security settings. See fields below.</td></tr>
+                        <tr><td><code>security.is_protected</code></td><td>boolean</td><td><span class="optional">optional</span></td><td>Whether the paste requires a password.</td></tr>
+                        <tr><td><code>security.password</code></td><td>string</td><td><span class="optional">optional</span></td><td>Password (required if <code>is_protected</code> is true).</td></tr>
+                        <tr><td><code>security.is_burn_after_read</code></td><td>boolean</td><td><span class="optional">optional</span></td><td>Destroy paste after first view.</td></tr>
+                        <tr><td><code>is_expiry</code></td><td>boolean</td><td><span class="optional">optional</span></td><td>Enable expiration.</td></tr>
+                        <tr><td><code>expiry_date</code></td><td>string (YYYY-MM-DD)</td><td><span class="optional">optional</span></td><td>Expiration date.</td></tr>
+                        <tr><td><code>expiry_hour</code></td><td>integer (0–23)</td><td><span class="optional">optional</span></td><td>Expiration hour.</td></tr>
+                        <tr><td><code>expiry_minute</code></td><td>integer (0–59)</td><td><span class="optional">optional</span></td><td>Expiration minute.</td></tr>
+                        <tr><td><code>tz_offset_minutes</code></td><td>integer</td><td><span class="optional">optional</span></td><td>Client timezone offset in minutes (e.g. <code>-330</code> for IST).</td></tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <h3 style="font-size: 1rem;">Request Example</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-lang">JSON</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+<pre>{
+  <span class="key">"title"</span>: <span class="str">"My Snippet"</span>,
+  <span class="key">"content"</span>: <span class="str">"print('Hello, Kagune')"</span>,
+  <span class="key">"syntax"</span>: <span class="str">"python"</span>,
+  <span class="key">"security"</span>: {
+    <span class="key">"is_protected"</span>: <span class="kw">true</span>,
+    <span class="key">"password"</span>: <span class="str">"secret123"</span>,
+    <span class="key">"is_burn_after_read"</span>: <span class="kw">false</span>
+  },
+  <span class="key">"is_expiry"</span>: <span class="kw">true</span>,
+  <span class="key">"expiry_date"</span>: <span class="str">"2026-12-31"</span>,
+  <span class="key">"expiry_hour"</span>: <span class="num">23</span>,
+  <span class="key">"expiry_minute"</span>: <span class="num">59</span>,
+  <span class="key">"tz_offset_minutes"</span>: <span class="num">-330</span>
+}</pre>
+                </div>
+
+                <h3 style="font-size: 1rem;">Response Example</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-lang">JSON</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+<pre>{
+  <span class="key">"id"</span>: <span class="str">"kgn_a1b2c3d4"</span>,
+  <span class="key">"title"</span>: <span class="str">"My Snippet"</span>,
+  <span class="key">"content"</span>: <span class="str">"print('Hello, Kagune')"</span>,
+  <span class="key">"syntax"</span>: <span class="str">"python"</span>,
+  <span class="key">"url"</span>: <span class="str">"/p/kgn_a1b2c3d4"</span>,
+  <span class="key">"is_protected"</span>: <span class="kw">true</span>,
+  <span class="key">"is_burn_after_read"</span>: <span class="kw">false</span>,
+  <span class="key">"views"</span>: <span class="num">0</span>,
+  <span class="key">"downloads"</span>: <span class="num">0</span>,
+  <span class="key">"created_at"</span>: <span class="str">"2026-05-30T12:00:00+00:00"</span>,
+  <span class="key">"expires_at"</span>: <span class="str">"2026-12-31T23:59:00+00:00"</span>,
+  <span class="key">"security"</span>: { <span class="key">"is_protected"</span>: <span class="kw">true</span>, <span class="key">"is_burn_after_read"</span>: <span class="kw">false</span> },
+  <span class="key">"stats"</span>: { <span class="key">"views"</span>: <span class="num">0</span>, <span class="key">"downloads"</span>: <span class="num">0</span> },
+  <span class="key">"timestamps"</span>: { <span class="key">"created_at"</span>: <span class="str">"2026-05-30T12:00:00+00:00"</span>, <span class="key">"expires_at"</span>: <span class="str">"2026-12-31T23:59:00+00:00"</span> }
+}</pre>
+                </div>
+            </div>
+
+            <!-- GET /api/paste/{id} -->
+            <div class="endpoint" id="api-get">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/api/paste/{paste_id}</span>
+                </div>
+                <p class="endpoint-desc">Retrieve full details for a paste, including content and metadata.</p>
+
+                <h3 style="font-size: 1rem;">Query Parameters</h3>
+                <div class="table-wrapper">
+                <table class="params-table">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>password</code></td><td>string</td><td><span class="optional">optional</span></td><td>Required if paste is password protected.</td></tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <h3 style="font-size: 1rem;">Request Example</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-lang">HTTP</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+<pre>GET /api/paste/kgn_a1b2c3d4?password=secret123</pre>
+                </div>
+
+                <h3 style="font-size: 1rem;">Response Example</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-lang">JSON</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+<pre>{
+  <span class="key">"id"</span>: <span class="str">"kgn_a1b2c3d4"</span>,
+  <span class="key">"title"</span>: <span class="str">"My Snippet"</span>,
+  <span class="key">"content"</span>: <span class="str">"print('Hello, Kagune')"</span>,
+  <span class="key">"syntax"</span>: <span class="str">"python"</span>,
+  <span class="key">"url"</span>: <span class="str">"/p/kgn_a1b2c3d4"</span>,
+  <span class="key">"is_protected"</span>: <span class="kw">true</span>,
+  <span class="key">"is_burn_after_read"</span>: <span class="kw">false</span>,
+  <span class="key">"views"</span>: <span class="num">42</span>,
+  <span class="key">"downloads"</span>: <span class="num">7</span>,
+  <span class="key">"created_at"</span>: <span class="str">"2026-05-30T12:00:00+00:00"</span>,
+  <span class="key">"expires_at"</span>: <span class="str">"2026-12-31T23:59:00+00:00"</span>,
+  <span class="key">"security"</span>: { <span class="key">"is_protected"</span>: <span class="kw">true</span>, <span class="key">"is_burn_after_read"</span>: <span class="kw">false</span> },
+  <span class="key">"stats"</span>: { <span class="key">"views"</span>: <span class="num">42</span>, <span class="key">"downloads"</span>: <span class="num">7</span> },
+  <span class="key">"timestamps"</span>: { <span class="key">"created_at"</span>: <span class="str">"2026-05-30T12:00:00+00:00"</span>, <span class="key">"expires_at"</span>: <span class="str">"2026-12-31T23:59:00+00:00"</span> }
+}</pre>
+                </div>
+            </div>
+
+            <!-- GET /raw -->
+            <div class="endpoint" id="api-raw">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/raw/{paste_id}</span>
+                </div>
+                <p class="endpoint-desc">Retrieve the raw, plaintext content of a paste. Ideal for scripts and curl pipelines.</p>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-lang">HTTP</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+<pre>GET /raw/kgn_a1b2c3d4
+<span class="cm"># Response: text/plain</span>
+print(<span class="str">'Hello, Kagune'</span>)</pre>
+                </div>
+            </div>
+
+            <!-- GET /download -->
+            <div class="endpoint" id="api-download">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/download/{paste_id}</span>
+                </div>
+                <p class="endpoint-desc">Download a paste as a file with an appropriate extension based on its syntax.</p>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-lang">HTTP</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+<pre>GET /download/kgn_a1b2c3d4
+<span class="cm"># Response: Content-Disposition: attachment; filename="kgn_a1b2c3d4.py"</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- PYTHON SDK -->
+        <section class="docs-section" id="python-sdk">
+            <h2><i class="fa-brands fa-python"></i> Official KaguneBin Python SDK</h2>
+            <p>
+                The official Python SDK gives you a lightweight, friendly wrapper around the REST API.
+                Perfect for automation, scripts, CLI tools, and bot integrations.
+            </p>
+
+            <h3>Installation</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">bash</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>pip install kagunebin</pre>
+            </div>
+
+            <h3>Why use the SDK?</h3>
+            <ul>
+                <li><strong>Lightweight</strong> — zero bloat, single dependency.</li>
+                <li><strong>Simple API</strong> — readable, Pythonic method names.</li>
+                <li><strong>Automation friendly</strong> — ideal for CI/CD pipelines.</li>
+                <li><strong>Bot friendly</strong> — works seamlessly with Pyrogram, Telethon, Discord.py.</li>
+            </ul>
+
+            <h3>Quick Start</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre><span class="kw">from</span> kagunebin <span class="kw">import</span> KaguneBin
+
+client = <span class="fn">KaguneBin</span>()
+paste = client.<span class="fn">create</span>(
+    title=<span class="str">"Hello"</span>,
+    content=<span class="str">"print('Paste Fear. Share Power.')"</span>,
+    syntax=<span class="str">"python"</span>,
+)
+<span class="cm"># create() returns the API JSON as a dict</span>
+<span class="fn">print</span>(paste[<span class="str">"id"</span>], paste[<span class="str">"url"</span>])</pre>
+            </div>
+
+            <h3>Constructor</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>client = <span class="fn">KaguneBin</span>(base_url=<span class="str">"https://kagunebin.vercel.app"</span>)</pre>
+            </div>
+
+            <!-- create() -->
+            <h3 id="sdk-create"><code class="inline">create()</code> — Create a paste</h3>
+            <p>Create a new paste with optional password protection and burn-after-read.</p>
+            <div class="table-wrapper">
+            <table class="params-table">
+                <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>title</code></td><td>str</td><td>—</td><td>Paste title (required).</td></tr>
+                    <tr><td><code>content</code></td><td>str</td><td>—</td><td>Paste content (required).</td></tr>
+                    <tr><td><code>syntax</code></td><td>str</td><td><code>"plaintext"</code></td><td>Language for syntax highlighting. Must be in <code>SYNTAXES</code>.</td></tr>
+                    <tr><td><code>password</code></td><td>str</td><td><code>None</code></td><td>If set, the paste is password-protected.</td></tr>
+                    <tr><td><code>burn_after_read</code></td><td>bool</td><td><code>False</code></td><td>Destroy after first view.</td></tr>
+                </tbody>
+            </table>
+            </div>
+            <div class="callout">
+                <i class="fa-solid fa-circle-info"></i>
+                <p>The SDK does not currently expose expiration parameters — use the REST API directly if you need <code class="inline">is_expiry</code>, <code class="inline">expiry_date</code>, <code class="inline">expiry_hour</code>, and <code class="inline">expiry_minute</code>.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>paste = client.<span class="fn">create</span>(
+    title=<span class="str">"Secret Config"</span>,
+    content=<span class="str">"API_KEY=xxx"</span>,
+    syntax=<span class="str">"bash"</span>,
+    password=<span class="str">"hunter2"</span>,
+    burn_after_read=<span class="kw">True</span>,
+)
+<span class="fn">print</span>(paste[<span class="str">"url"</span>])</pre>
+            </div>
+
+            <!-- get() -->
+            <h3 id="sdk-get"><code class="inline">get(paste_id, password=None)</code> — Retrieve a paste</h3>
+            <p>Returns the full paste payload as a <code class="inline">dict</code>.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>paste = client.<span class="fn">get</span>(<span class="str">"kgn_a1b2c3d4"</span>, password=<span class="str">"hunter2"</span>)
+<span class="fn">print</span>(paste[<span class="str">"title"</span>])
+<span class="fn">print</span>(paste[<span class="str">"content"</span>])</pre>
+            </div>
+
+            <!-- raw() -->
+            <h3 id="sdk-raw"><code class="inline">raw(paste_id, password=None)</code> — Raw text</h3>
+            <p>Returns the plaintext content as a <code class="inline">str</code>.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>text = client.<span class="fn">raw</span>(<span class="str">"kgn_a1b2c3d4"</span>)
+<span class="fn">print</span>(text)</pre>
+            </div>
+
+            <!-- download() -->
+            <h3 id="sdk-download"><code class="inline">download(paste_id, password=None)</code> — File bytes</h3>
+            <p>Returns the file content as <code class="inline">bytes</code>. Write it to disk yourself.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>data = client.<span class="fn">download</span>(<span class="str">"kgn_a1b2c3d4"</span>)
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"snippet.py"</span>, <span class="str">"wb"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(data)</pre>
+            </div>
+
+            <!-- syntaxes() -->
+            <h3 id="sdk-syntaxes"><code class="inline">syntaxes()</code></h3>
+            <p>Returns a copy of every supported syntax language.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>langs = client.<span class="fn">syntaxes</span>()
+<span class="fn">print</span>(langs)
+<span class="cm"># ['python', 'javascript', 'typescript', 'java', 'cpp', 'c', ...]</span></pre>
+            </div>
+
+            <!-- is_valid_syntax() -->
+            <h3 id="sdk-valid"><code class="inline">is_valid_syntax(syntax)</code></h3>
+            <p>Validates whether a given syntax name is supported (case-insensitive).</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>client.<span class="fn">is_valid_syntax</span>(<span class="str">"python"</span>)   <span class="cm"># True</span>
+client.<span class="fn">is_valid_syntax</span>(<span class="str">"klingon"</span>)  <span class="cm"># False</span></pre>
+            </div>
+        </section>
+
+        <!-- TELEGRAM BOT -->
+        <section class="docs-section" id="telegram-bot">
+            <h2><i class="fa-brands fa-telegram"></i> Telegram Bot Integration</h2>
+            <p>
+                Combine the KaguneBin SDK with <strong>Pyrogram</strong> to build a Telegram bot that turns
+                any message into a shareable paste in seconds.
+            </p>
+
+            <h3>Installation</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">bash</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>pip install pyrogram tgcrypto kagunebin</pre>
+            </div>
+
+            <h3>Full Bot Example</h3>
+            <p>This bot listens for any text message, creates a KaguneBin paste, and replies with the URL.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">python</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre><span class="kw">from</span> pyrogram <span class="kw">import</span> Client, filters
+<span class="kw">from</span> kagunebin <span class="kw">import</span> KaguneBin
+
+API_ID = <span class="num">123456</span>
+API_HASH = <span class="str">"your_api_hash"</span>
+BOT_TOKEN = <span class="str">"your_bot_token"</span>
+
+app = <span class="fn">Client</span>(<span class="str">"kagune-bot"</span>, api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+kagune = <span class="fn">KaguneBin</span>()
+
+<span class="key">@app.on_message</span>(filters.text & ~filters.command([<span class="str">"start"</span>]))
+<span class="kw">async def</span> <span class="fn">paste_handler</span>(client, message):
+    paste = kagune.<span class="fn">create</span>(
+        title=<span class="str">f"From @{message.from_user.username}"</span>,
+        content=message.text,
+        syntax=<span class="str">"python"</span>,
+    )
+    <span class="kw">await</span> message.<span class="fn">reply_text</span>(<span class="str">f"🩸 Paste created:\n{paste["url"]}"</span>)
+
+<span class="key">@app.on_message</span>(filters.command(<span class="str">"start"</span>))
+<span class="kw">async def</span> <span class="fn">start</span>(client, message):
+    <span class="kw">await</span> message.<span class="fn">reply_text</span>(<span class="str">"Send me any text and I'll paste it on KaguneBin."</span>)
+
+app.<span class="fn">run</span>()</pre>
+            </div>
+
+            <div class="callout">
+                <i class="fa-solid fa-bolt"></i>
+                <p><strong>That's it.</strong> Send your bot any message — it instantly creates a paste and replies with a clean KaguneBin URL.</p>
+            </div>
+        </section>
+
+        <!-- cURL EXAMPLES -->
+        <section class="docs-section" id="curl">
+            <h2><i class="fa-solid fa-terminal"></i> cURL Examples</h2>
+            <p>Quick reference for hitting the API directly from your shell.</p>
+
+            <h3>Create a paste</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">bash</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>curl -X POST https://kagunebin.vercel.app/paste \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "title": "My Snippet",
+    "content": "print(\"Hello\")",
+    "syntax": "python"
+  }'</span></pre>
+            </div>
+
+            <h3>Retrieve paste details</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">bash</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>curl https://kagunebin.vercel.app/api/paste/kgn_a1b2c3d4</pre>
+            </div>
+
+            <h3>Raw content</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">bash</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>curl https://kagunebin.vercel.app/raw/kgn_a1b2c3d4</pre>
+            </div>
+
+            <h3>Download content</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">bash</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>curl -O -J https://kagunebin.vercel.app/download/kgn_a1b2c3d4</pre>
+            </div>
+        </section>
+
+        <!-- ERRORS -->
+        <section class="docs-section" id="errors">
+            <h2><i class="fa-solid fa-triangle-exclamation"></i> Error Handling</h2>
+            <p>KaguneBin uses standard HTTP status codes. All errors return JSON with a consistent shape.</p>
+
+            <div class="status-codes">
+                <div class="status-code-row">
+                    <span class="status-code-badge status-400">400</span>
+                    <div><strong>Bad Request</strong><p>Missing or malformed parameters in your request.</p></div>
+                </div>
+                <div class="status-code-row">
+                    <span class="status-code-badge status-401">401</span>
+                    <div><strong>Unauthorized</strong><p>Password is missing or incorrect for a protected paste.</p></div>
+                </div>
+                <div class="status-code-row">
+                    <span class="status-code-badge status-404">404</span>
+                    <div><strong>Not Found</strong><p>The requested paste does not exist or has been burned.</p></div>
+                </div>
+                <div class="status-code-row">
+                    <span class="status-code-badge status-410">410</span>
+                    <div><strong>Expired Paste</strong><p>The paste expired and is no longer available.</p></div>
+                </div>
+                <div class="status-code-row">
+                    <span class="status-code-badge status-500">500</span>
+                    <div><strong>Internal Server Error</strong><p>Something went wrong on our side. Try again shortly.</p></div>
+                </div>
+            </div>
+
+            <h3>Error Response Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-lang">JSON</div>
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+<pre>{
+  <span class="key">"success"</span>: <span class="kw">false</span>,
+  <span class="key">"error"</span>: <span class="str">"unauthorized"</span>,
+  <span class="key">"message"</span>: <span class="str">"Invalid password for this paste."</span>,
+  <span class="key">"status"</span>: <span class="num">401</span>
+}</pre>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="docs-section" id="faq">
+            <h2><i class="fa-solid fa-circle-question"></i> Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">What is burn-after-read? <i class="fa-solid fa-chevron-down"></i></button>
+                <div class="faq-answer"><p>Burn-after-read pastes are automatically deleted the moment they are viewed for the first time. Perfect for one-time secrets, tokens, and short-lived messages.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">How does expiration work? <i class="fa-solid fa-chevron-down"></i></button>
+                <div class="faq-answer"><p>You can set a future date, hour, and minute when creating a paste. Once that time passes, the paste is permanently removed and any subsequent request returns a <code class="inline">410 Expired</code> response.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">How do password-protected pastes work? <i class="fa-solid fa-chevron-down"></i></button>
+                <div class="faq-answer"><p>When a paste is protected, the API requires the correct <code class="inline">password</code> query parameter (or SDK argument) to return the content. Without it, the request fails with <code class="inline">401 Unauthorized</code>.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">How can I download a paste? <i class="fa-solid fa-chevron-down"></i></button>
+                <div class="faq-answer"><p>Hit the <code class="inline">/download/{paste_id}</code> endpoint. The server returns the content with a <code class="inline">Content-Disposition</code> header so browsers and curl save it as a file with the correct extension.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">How do I use the Python SDK? <i class="fa-solid fa-chevron-down"></i></button>
+                <div class="faq-answer"><p>Install with <code class="inline">pip install kagunebin</code>, instantiate <code class="inline">KaguneBin()</code>, then call <code class="inline">create()</code>, <code class="inline">get()</code>, <code class="inline">raw()</code>, or <code class="inline">download()</code>. See the <a href="#python-sdk" style="color: var(--primary-color);">Python SDK section</a> above for full examples.</p></div>
+            </div>
+        </section>
+
+        <!-- OPEN SOURCE -->
+        <section class="docs-section" id="open-source">
+            <h2><i class="fa-brands fa-github"></i> Open Source</h2>
+            <p>KaguneBin is fully open source. Contributions, issues, and stars are always welcome.</p>
+
+            <div class="cards-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-brands fa-github"></i></div>
+                    <h3>KaguneBin Website</h3>
+                    <p>The full source code for the KaguneBin web app.</p>
+                    <a href="https://github.com/MKishoreDev/KaguneBin" target="_blank" rel="noopener" class="btn-secondary" style="margin-top: 1rem;">
+                        <i class="fa-brands fa-github"></i> View Repo
+                    </a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-brands fa-python"></i></div>
+                    <h3>KaguneBin Python SDK</h3>
+                    <p>The official Python SDK source on GitHub.</p>
+                    <a href="https://github.com/MKishoreDev/kagunebin-pypi" target="_blank" rel="noopener" class="btn-secondary" style="margin-top: 1rem;">
+                        <i class="fa-brands fa-github"></i> View Repo
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-tagline">Paste Fear. <span>Share Power.</span></div>
+    <p>© 2026 KaguneBin — Built with FastAPI, caffeine, and Tokyo Ghoul inspiration.</p>
+    <p style="margin-top: 0.5rem;">Crafted by <strong style="color: var(--primary-color);">Kishore</strong>.</p>
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/docs">Docs</a>
+        <a href="https://github.com/MKishoreDev/KaguneBin" target="_blank" rel="noopener">GitHub</a>
+    </div>
+</footer>
+
+<script>
+// Theme toggle
+const themeToggle = document.getElementById('themeToggle');
+const savedTheme = localStorage.getItem('kagune-theme');
+if (savedTheme === 'light') {
+    document.documentElement.classList.add('light-mode');
+    themeToggle.textContent = '☀️';
+}
+themeToggle.addEventListener('click', () => {
+    document.documentElement.classList.toggle('light-mode');
+    const isLight = document.documentElement.classList.contains('light-mode');
+    themeToggle.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('kagune-theme', isLight ? 'light' : 'dark');
+});
+
+// Hamburger
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+});
+mobileMenu.addEventListener('click', (e) => {
+    if (e.target === mobileMenu) {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+    }
+});
+
+// Copy code
+function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+        setTimeout(() => { btn.innerHTML = original; }, 1500);
+    });
+}
+
+// FAQ toggle
+document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+        q.parentElement.classList.toggle('open');
+    });
+});
+</script>
+</body>
+</html>
