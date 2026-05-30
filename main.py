@@ -39,10 +39,11 @@ app = FastAPI(
     title="KaguneBin",
     version="1.0.0",
     lifespan=lifespan,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
 )
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
-
 
 def _prepare_for_bcrypt(password: str) -> bytes:
     """SHA-256 → base64 → truncate to 72 bytes (bcrypt hard limit) → encode."""
