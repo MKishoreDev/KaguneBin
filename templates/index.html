@@ -1164,9 +1164,17 @@
                     Paste ID: <code>${data.id}</code>
                 `;
 
-                showToast("Paste created successfully");
-                setTimeout(() => { window.location.href = "/p/" + data.id; }, 1500);
+                const burnAfterRead = document.getElementById("isBurnAfterRead").checked;
+                if (burnAfterRead) {
+                    showToast("Burn-after-read paste created");
+                } else {
+                    showToast("Paste created successfully");
 
+                    setTimeout(() => {
+                        window.location.href = "/p/" + data.id;
+                    }, 1500);
+                }
+                
             } catch (error) {
                 apiResult.style.display = "block";
                 apiResult.innerHTML = `
