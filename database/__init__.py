@@ -1,8 +1,6 @@
 import os
-import psycopg
-
 from contextlib import contextmanager
-
+import psycopg
 from psycopg.rows import dict_row
 
 from config import DATABASE_URI
@@ -26,10 +24,14 @@ CREATE TABLE IF NOT EXISTS pastes (
 );
 
 CREATE INDEX IF NOT EXISTS idx_pastes_expires_at ON pastes (expires_at);
+CREATE INDEX IF NOT EXISTS idx_pastes_created_at ON pastes (created_at DESC);
 """
 
 @contextmanager
 def get_conn():
+    if not DATABASE_URI:
+        raise ConnectionError("DATABASE_URI environment variable is not configured.")
+    
     conn = psycopg.connect(DATABASE_URI, row_factory=dict_row)
     try:
         yield conn
@@ -41,5 +43,8 @@ def get_conn():
         conn.close()
 
 def start_db():
+    if not DATABASE_URI:
+        print("[WARN] DATABASE_URI not configured. Skipping start_db().")
+        return
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute(SCHEMA_SQL)

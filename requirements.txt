@@ -1,5 +1,6 @@
-fastapi
-uvicorn[standard]
-pydantic
-psycopg[binary]
-bcrypt
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.7.0
+psycopg[binary]>=3.1.18
+bcrypt>=4.1.2
+requests>=2.31.0

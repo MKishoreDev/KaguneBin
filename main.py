@@ -5,17 +5,19 @@ import hashlib
 import base64
 import bcrypt
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import (
     FileResponse,
     HTMLResponse,
     PlainTextResponse,
     StreamingResponse,
+    JSONResponse,
 )
 from fastapi.staticfiles import StaticFiles
 
 from models import PasteCreate, PasteResponse
-from config import DATABASE_URI
+from config import DATABASE_URI, BASE_URL
 
 from database import start_db
 from database.funcs import (
@@ -25,22 +27,34 @@ from database.funcs import (
     increment_views,
     increment_downloads,
     list_pastes,
+    cleanup_expired_pastes,
 )
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
         start_db()
+        print(f"[KaguneBin] Database initialized at {datetime.now(timezone.utc).isoformat()}")
     except Exception as e:
-        print(f"Error initializing database: {e}", datetime)
+        print(f"[KaguneBin] Error initializing database: {e}")
     yield
 
 app = FastAPI(
     title="KaguneBin",
-    version="1.0.0",
+    description="Dark-themed, developer-focused pastebin API inspired by Tokyo Ghoul.",
+    version="1.0.1",
     lifespan=lifespan,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+)
+
+# Enable CORS for cross-origin frontend integrations & SDKs
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
@@ -63,6 +77,9 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def build_expires_at(paste: PasteCreate) -> datetime | None:
+    if paste.expires_in_hours:
+        return datetime.now(timezone.utc) + timedelta(hours=paste.expires_in_hours)
+
     if not paste.is_expiry:
         return None
 
@@ -71,7 +88,7 @@ def build_expires_at(paste: PasteCreate) -> datetime | None:
         or paste.expiry_hour is None
         or paste.expiry_minute is None
     ):
-        raise HTTPException(status_code=400, detail="Expiry fields are missing")
+        raise HTTPException(status_code=400, detail="Expiry fields (date, hour, minute) are required when is_expiry is True")
 
     try:
         tz_offset = timedelta(minutes=paste.tz_offset_minutes or 0)
@@ -106,46 +123,55 @@ def is_expired(data: dict) -> bool:
     return now >= expires_at
 
 
-def row_to_response(data: dict) -> dict:
+def row_to_response(data: dict, request: Request | None = None) -> dict:
     created_at = data["created_at"]
-    expires_at = data["expires_at"]
+    expires_at = data.get("expires_at")
 
     created_at_str = (
-        created_at.isoformat() if hasattr(created_at, "isoformat") else created_at
+        created_at.isoformat() if hasattr(created_at, "isoformat") else str(created_at)
     )
     expires_at_str = (
-        (expires_at.isoformat() if hasattr(expires_at, "isoformat") else expires_at)
+        (expires_at.isoformat() if hasattr(expires_at, "isoformat") else str(expires_at))
         if expires_at
         else None
     )
 
+    base = str(request.base_url).rstrip("/") if request else BASE_URL
+    paste_path = f"/p/{data['id']}"
+
     return {
         "id": data["id"],
-        "title": data["title"],
-        "content": data["content"],
-        "syntax": data["syntax"],
-        "url": f"/p/{data['id']}",
-        "is_protected": data["is_protected"],
-        "is_burn_after_read": data["is_burn_after_read"],
-        "views": data["views"],
-        "downloads": data["downloads"],
+        "title": data.get("title", ""),
+        "content": data.get("content", ""),
+        "syntax": data.get("syntax", "plaintext"),
+        "url": paste_path,
+        "is_protected": data.get("is_protected", False),
+        "is_burn_after_read": data.get("is_burn_after_read", False),
+        "views": data.get("views", 0),
+        "downloads": data.get("downloads", 0),
         "created_at": created_at_str,
         "expires_at": expires_at_str,
         "security": {
-            "is_protected": data["is_protected"],
-            "is_burn_after_read": data["is_burn_after_read"],
+            "is_protected": data.get("is_protected", False),
+            "is_burn_after_read": data.get("is_burn_after_read", False),
         },
-        "stats": {"views": data["views"], "downloads": data["downloads"]},
-        "timestamps": {"created_at": created_at_str, "expires_at": expires_at_str},
+        "stats": {
+            "views": data.get("views", 0),
+            "downloads": data.get("downloads", 0),
+        },
+        "timestamps": {
+            "created_at": created_at_str,
+            "expires_at": expires_at_str,
+        },
     }
 
 
 def validate_password(data: dict, password: str | None):
-    if not data["is_protected"]:
+    if not data.get("is_protected"):
         return
     if not password:
-        raise HTTPException(status_code=401, detail="Password required")
-    if not verify_password(password, data["password"]):
+        raise HTTPException(status_code=401, detail="Password required for protected paste")
+    if not verify_password(password, data.get("password") or ""):
         raise HTTPException(status_code=401, detail="Invalid password")
 
 
@@ -163,52 +189,58 @@ def paste_page_routed(paste_id: str):
 
 
 @app.get("/status")
+@app.get("/health")
 def health():
-    return {"status": "ok", "service": "KaguneBin"}
+    return {
+        "status": "ok",
+        "service": "KaguneBin",
+        "version": "1.0.1",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @app.post("/paste", response_model=PasteResponse)
-def create_paste(paste: PasteCreate):
+def create_paste(paste: PasteCreate, request: Request):
     try:
         paste_id = f"kgn_{uuid4().hex[:8]}"
         expires_at = build_expires_at(paste)
-        hashed_password = hash_password(paste.password) if paste.password else None
+        
+        effective_pwd = paste.effective_password
+        hashed_password = hash_password(effective_pwd) if effective_pwd else None
 
-        print("Creating paste...", paste_id)
         data = insert_paste(
             paste_id=paste_id,
-            title=paste.title,
+            title=paste.title.strip(),
             content=paste.content,
-            syntax=paste.syntax,
+            syntax=paste.syntax.lower().strip() or "plaintext",
             is_protected=paste.is_protected,
             password=hashed_password,
-            is_burn_after_read=paste.is_burn_after_read,
+            is_burn_after_read=paste.burn_after_read,
             created_at=datetime.now(timezone.utc),
             expires_at=expires_at,
         )
-        print("Insert success:", data)
-        return row_to_response(data)
+        return row_to_response(data, request)
     except HTTPException:
         raise
     except Exception as e:
-        print("ERROR IN /paste:", str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        print("[KaguneBin] ERROR in /paste:", str(e))
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
 @app.get("/api/paste/{paste_id}", response_model=PasteResponse)
-def fetch_paste(paste_id: str, password: str | None = Query(default=None)):
+def fetch_paste(paste_id: str, request: Request, password: str | None = Query(default=None)):
     data = db_get_paste(paste_id)
     if not data:
         raise HTTPException(status_code=404, detail="Paste not found")
     if is_expired(data):
         db_delete_paste(paste_id)
-        raise HTTPException(status_code=410, detail="Paste expired")
+        raise HTTPException(status_code=410, detail="Paste has expired and was removed")
 
     validate_password(data, password)
-    data = increment_views(paste_id)
-    response = row_to_response(data)
+    data = increment_views(paste_id) or data
+    response = row_to_response(data, request)
 
-    if data["is_burn_after_read"]:
+    if data.get("is_burn_after_read"):
         db_delete_paste(paste_id)
 
     return response
@@ -221,12 +253,12 @@ def get_raw(paste_id: str, password: str | None = Query(default=None)):
         raise HTTPException(status_code=404, detail="Paste not found")
     if is_expired(data):
         db_delete_paste(paste_id)
-        raise HTTPException(status_code=410, detail="Paste expired")
+        raise HTTPException(status_code=410, detail="Paste has expired and was removed")
 
     validate_password(data, password)
-    content = data["content"]
+    content = data.get("content", "")
     increment_views(paste_id)
-    if data["is_burn_after_read"]:
+    if data.get("is_burn_after_read"):
         db_delete_paste(paste_id)
     return content
 
@@ -239,6 +271,7 @@ def get_file_extension(syntax: str) -> str:
         "swift": "swift", "kotlin": "kt", "html": "html", "css": "css",
         "scss": "scss", "json": "json", "xml": "xml", "yaml": "yaml",
         "sql": "sql", "bash": "sh", "shell": "sh", "text": "txt", "plaintext": "txt",
+        "markdown": "md", "dockerfile": "dockerfile",
     }
     return ext_map.get(syntax.lower(), "txt")
 
@@ -250,28 +283,33 @@ def download_paste(paste_id: str, password: str | None = Query(default=None)):
         raise HTTPException(status_code=404, detail="Paste not found")
     if is_expired(data):
         db_delete_paste(paste_id)
-        raise HTTPException(status_code=410, detail="Paste expired")
+        raise HTTPException(status_code=410, detail="Paste has expired and was removed")
 
     validate_password(data, password)
-    content = data["content"]
+    content = data.get("content", "")
     syntax = data.get("syntax", "plaintext")
-    title = data.get("title", paste_id)
+    title = data.get("title") or paste_id
     ext = get_file_extension(syntax)
-    filename = f"{title}.{ext}"
+    
+    # Sanitize title for filename
+    safe_title = "".join(c for c in title if c.isalnum() or c in ("-", "_", " ")).strip() or paste_id
+    filename = f"{safe_title}.{ext}"
 
     increment_views(paste_id)
     increment_downloads(paste_id)
 
-    if data["is_burn_after_read"]:
+    if data.get("is_burn_after_read"):
         db_delete_paste(paste_id)
 
     return StreamingResponse(
         iter([content]),
-        media_type="text/plain",
-        headers={"Content-Disposition": f"attachment; filename={filename}"},
+        media_type="text/plain; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 
 
 @app.exception_handler(404)
-async def not_found_handler(request, exc):
+async def not_found_handler(request: Request, exc):
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(status_code=404, content={"detail": "Not found"})
     return FileResponse("templates/404.html", status_code=404)

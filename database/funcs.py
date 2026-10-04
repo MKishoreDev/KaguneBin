@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from database import get_conn
@@ -50,7 +50,6 @@ def insert_paste(
                 expires_at,
             ),
         )
-
         return cur.fetchone()
 
 def get_paste(paste_id: str) -> Optional[dict]:
@@ -59,7 +58,6 @@ def get_paste(paste_id: str) -> Optional[dict]:
             "SELECT * FROM pastes WHERE id = %s;",
             (paste_id,),
         )
-
         return cur.fetchone()
 
 def delete_paste(paste_id: str) -> bool:
@@ -68,10 +66,9 @@ def delete_paste(paste_id: str) -> bool:
             "DELETE FROM pastes WHERE id = %s;",
             (paste_id,),
         )
-
         return cur.rowcount > 0
 
-def increment_views(paste_id: str) -> dict:
+def increment_views(paste_id: str) -> Optional[dict]:
     sql = """
         UPDATE pastes
         SET views = views + 1
@@ -81,10 +78,9 @@ def increment_views(paste_id: str) -> dict:
 
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute(sql, (paste_id,))
-
         return cur.fetchone()
 
-def increment_downloads(paste_id: str) -> dict:
+def increment_downloads(paste_id: str) -> Optional[dict]:
     sql = """
         UPDATE pastes
         SET downloads = downloads + 1
@@ -94,13 +90,24 @@ def increment_downloads(paste_id: str) -> dict:
 
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute(sql, (paste_id,))
-
         return cur.fetchone()
 
-def list_pastes() -> list[dict]:
+def list_pastes(limit: int = 50, offset: int = 0) -> list[dict]:
+    sql = """
+        SELECT * FROM pastes
+        WHERE (expires_at IS NULL OR expires_at > NOW())
+        ORDER BY created_at DESC
+        LIMIT %s OFFSET %s;
+    """
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute(
-            "SELECT * FROM pastes ORDER BY created_at DESC;"
-        )
-
+        cur.execute(sql, (limit, offset))
         return cur.fetchall()
+
+def cleanup_expired_pastes() -> int:
+    sql = """
+        DELETE FROM pastes
+        WHERE expires_at IS NOT NULL AND expires_at <= NOW();
+    """
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(sql)
+        return cur.rowcount
